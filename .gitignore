@@ -70,3 +70,5 @@ storybook-static
 # Local SELISE environment files
 .env
 .env.*
+
+src_tree.txt
