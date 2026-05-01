@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getWebsitePages, getWebsiteProjects } from '../../services/vibebuilder.service';
 import { WebsitePage, WebsiteProject } from '../../types/vibebuilder.types';
 
@@ -134,6 +135,13 @@ export const VibeBuilderDashboardPage = () => {
                   Components:{' '}
                   <span className="font-semibold">{getComponentCount(page.layoutJson)}</span>
                 </p>
+
+                <Link
+                  className="mt-4 inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+                  to={`/vibebuilder/builder/${page.projectId}/${page.ItemId}`}
+                >
+                  Open Builder
+                </Link>
               </div>
             ))}
           </div>

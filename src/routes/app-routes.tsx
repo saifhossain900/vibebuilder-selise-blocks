@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardPage } from '@/modules/dashboard';
 import { FinancePage } from '@/modules/finance';
-import { VibeBuilderDashboardPage } from '@/modules/vibebuilder';
+import { VibeBuilderDashboardPage, VibeBuilderEditorPage } from '@/modules/vibebuilder';
 import { CalendarPage } from '@/modules/big-calendar';
 import { EmailPage } from '@/modules/email';
 import { ChatPage } from '@/modules/chat';
@@ -35,6 +35,7 @@ export const AppRoutes = () => {
   if (isLoading) {
     return <LoadingOverlay />;
   }
+
   return (
     <div className="min-h-screen bg-background font-sans antialiased relative">
       <ClientMiddleware>
@@ -42,6 +43,7 @@ export const AppRoutes = () => {
           <SidebarProvider>
             <Routes>
               {AuthRoutes}
+
               <Route
                 element={
                   <Guard>
@@ -50,6 +52,7 @@ export const AppRoutes = () => {
                 }
               >
                 <Route path="/dashboard" element={<DashboardPage />} />
+
                 <Route
                   path="/finance"
                   element={
@@ -58,11 +61,13 @@ export const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
+
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/inventory/add" element={<InventoryFormPage />} />
                 <Route path="/inventory/:itemId" element={<InventoryDetailsPage />} />
                 <Route path="/activity-log" element={<ActivityLogPage />} />
+
                 <Route
                   path="/timeline"
                   element={
@@ -71,13 +76,21 @@ export const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
+
                 <Route path="/mail" element={<EmailPage />} />
                 <Route path="/mail/:category" element={<EmailPage />} />
                 <Route path="/mail/:category/:emailId" element={<EmailPage />} />
                 <Route path="/mail/:category/:labels/:emailId" element={<EmailPage />} />
+
                 <Route path="/identity-management" element={<UsersTablePage />} />
                 <Route path="/task-manager" element={<TaskManagerPage />} />
+
                 <Route path="/vibebuilder" element={<VibeBuilderDashboardPage />} />
+                <Route
+                  path="/vibebuilder/builder/:projectId/:pageId"
+                  element={<VibeBuilderEditorPage />}
+                />
+
                 <Route
                   path="/chat"
                   element={
@@ -86,10 +99,12 @@ export const AppRoutes = () => {
                     </ProtectedRoute>
                   }
                 />
+
                 <Route path="/invoices" element={<InvoicesPage />} />
                 <Route path="/invoices/create-invoice" element={<CreateInvoicePage />} />
                 <Route path="/invoices/:invoiceId/edit" element={<EditInvoicePage />} />
                 <Route path="/invoices/:invoiceId" element={<InvoiceDetailsPage />} />
+
                 <Route path="/file-manager/my-files" element={<FileManagerMyFilesPage />} />
                 <Route path="/file-manager/shared-files" element={<SharedWithMePage />} />
                 <Route path="/file-manager/trash" element={<TrashPage />} />
@@ -99,6 +114,7 @@ export const AppRoutes = () => {
                 />
                 <Route path="/file-manager/shared-files/:folderId" element={<SharedWithMePage />} />
                 <Route path="/file-manager/trash/:folderId" element={<TrashPage />} />
+
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/503" element={<ServiceUnavailablePage />} />
                 <Route path="/404" element={<NotFoundPage />} />
@@ -116,6 +132,7 @@ export const AppRoutes = () => {
           </SidebarProvider>
         </ThemeProvider>
       </ClientMiddleware>
+
       <Toaster />
     </div>
   );
