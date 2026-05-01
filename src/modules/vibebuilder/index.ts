@@ -1,0 +1,1 @@
+export { VibeBuilderDashboardPage } from './pages/vibebuilder-dashboard/vibebuilder-dashboard';

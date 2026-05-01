@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardPage } from '@/modules/dashboard';
 import { FinancePage } from '@/modules/finance';
+import { VibeBuilderDashboardPage } from '@/modules/vibebuilder';
 import { CalendarPage } from '@/modules/big-calendar';
 import { EmailPage } from '@/modules/email';
 import { ChatPage } from '@/modules/chat';
@@ -76,6 +77,7 @@ export const AppRoutes = () => {
                 <Route path="/mail/:category/:labels/:emailId" element={<EmailPage />} />
                 <Route path="/identity-management" element={<UsersTablePage />} />
                 <Route path="/task-manager" element={<TaskManagerPage />} />
+                <Route path="/vibebuilder" element={<VibeBuilderDashboardPage />} />
                 <Route
                   path="/chat"
                   element={
