@@ -1,7 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardPage } from '@/modules/dashboard';
 import { FinancePage } from '@/modules/finance';
-import { VibeBuilderDashboardPage, VibeBuilderEditorPage } from '@/modules/vibebuilder';
+import {
+  VibeBuilderDashboardPage,
+  VibeBuilderEditorPage,
+  VibeBuilderLiveSitePage,
+} from '@/modules/vibebuilder';
 import { CalendarPage } from '@/modules/big-calendar';
 import { EmailPage } from '@/modules/email';
 import { ChatPage } from '@/modules/chat';
@@ -63,9 +67,11 @@ export const AppRoutes = () => {
                 />
 
                 <Route path="/profile" element={<ProfilePage />} />
+
                 <Route path="/inventory" element={<InventoryPage />} />
                 <Route path="/inventory/add" element={<InventoryFormPage />} />
                 <Route path="/inventory/:itemId" element={<InventoryDetailsPage />} />
+
                 <Route path="/activity-log" element={<ActivityLogPage />} />
 
                 <Route
@@ -119,6 +125,8 @@ export const AppRoutes = () => {
                 <Route path="/503" element={<ServiceUnavailablePage />} />
                 <Route path="/404" element={<NotFoundPage />} />
               </Route>
+
+              <Route path="/site/:siteSlug/:pageSlug" element={<VibeBuilderLiveSitePage />} />
 
               {/* Redirects */}
               <Route path="/" element={<Navigate to="/dashboard" />} />
