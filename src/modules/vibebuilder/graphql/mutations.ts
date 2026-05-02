@@ -6,6 +6,23 @@ export const INSERT_WEBSITE_PROJECT_MUTATION = `
   }
 `;
 
+export const UPDATE_WEBSITE_PROJECT_MUTATION = `
+  mutation UpdateWebsiteProject($projectId: String!, $input: WebsiteProjectUpdateInput!) {
+    updateWebsiteProject(
+      where: {
+        ItemId: {
+          eq: $projectId
+        }
+      }
+      input: $input
+    ) {
+      itemId
+      totalImpactedData
+      acknowledged
+    }
+  }
+`;
+
 export const INSERT_WEBSITE_PAGE_MUTATION = `
   mutation InsertWebsitePage($input: WebsitePageInsertInput!) {
     insertWebsitePage(input: $input) {

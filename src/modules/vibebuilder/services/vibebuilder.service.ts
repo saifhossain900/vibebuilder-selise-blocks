@@ -5,6 +5,7 @@ import {
   INSERT_WEBSITE_PAGE_MUTATION,
   INSERT_WEBSITE_PROJECT_MUTATION,
   UPDATE_WEBSITE_PAGE_MUTATION,
+  UPDATE_WEBSITE_PROJECT_MUTATION,
 } from '../graphql/mutations';
 import {
   UpdateWebsitePageResult,
@@ -19,6 +20,14 @@ type CreateWebsiteProjectInput = {
   description: string;
   isPublished: boolean;
   createdAt?: string;
+  updatedAt?: string;
+};
+
+type UpdateWebsiteProjectInput = {
+  siteName?: string;
+  siteSlug?: string;
+  description?: string;
+  isPublished?: boolean;
   updatedAt?: string;
 };
 
@@ -48,6 +57,19 @@ export const createWebsiteProject = async (input: CreateWebsiteProjectInput): Pr
   await graphqlClient.mutate({
     query: INSERT_WEBSITE_PROJECT_MUTATION,
     variables: {
+      input,
+    },
+  });
+};
+
+export const updateWebsiteProject = async (
+  projectId: string,
+  input: UpdateWebsiteProjectInput
+): Promise<void> => {
+  await graphqlClient.mutate({
+    query: UPDATE_WEBSITE_PROJECT_MUTATION,
+    variables: {
+      projectId,
       input,
     },
   });

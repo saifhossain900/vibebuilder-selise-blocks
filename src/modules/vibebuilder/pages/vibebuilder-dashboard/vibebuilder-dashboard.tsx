@@ -7,6 +7,7 @@ import {
   deleteWebsitePage,
   getWebsitePages,
   getWebsiteProjects,
+  updateWebsiteProject,
 } from '../../services/vibebuilder.service';
 import { WebsitePage, WebsiteProject } from '../../types/vibebuilder.types';
 
@@ -60,13 +61,22 @@ export const VibeBuilderDashboardPage = () => {
   const [projects, setProjects] = useState<WebsiteProject[]>([]);
   const [pages, setPages] = useState<WebsitePage[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
+
   const [newWebsiteName, setNewWebsiteName] = useState('');
   const [newWebsiteDescription, setNewWebsiteDescription] = useState('');
   const [newPageName, setNewPageName] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingWebsite, setIsCreatingWebsite] = useState(false);
   const [isCreatingPage, setIsCreatingPage] = useState(false);
+  const [isEditingProjectSettings, setIsEditingProjectSettings] = useState(false);
+  const [isSavingProjectSettings, setIsSavingProjectSettings] = useState(false);
   const [deletingPageId, setDeletingPageId] = useState('');
+
+  const [settingsSiteName, setSettingsSiteName] = useState('');
+  const [settingsDescription, setSettingsDescription] = useState('');
+  const [settingsIsPublished, setSettingsIsPublished] = useState(true);
+
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -129,6 +139,20 @@ export const VibeBuilderDashboardPage = () => {
   const selectedProject = useMemo(() => {
     return projects.find((project) => project.ItemId === selectedProjectId);
   }, [projects, selectedProjectId]);
+
+  useEffect(() => {
+    if (!selectedProject) {
+      setSettingsSiteName('');
+      setSettingsDescription('');
+      setSettingsIsPublished(true);
+      return;
+    }
+
+    setSettingsSiteName(selectedProject.siteName);
+    setSettingsDescription(selectedProject.description ?? '');
+    setSettingsIsPublished(selectedProject.isPublished);
+    setIsEditingProjectSettings(false);
+  }, [selectedProject]);
 
   const selectedProjectPages = useMemo(() => {
     if (!selectedProject) {
@@ -265,6 +289,72 @@ export const VibeBuilderDashboardPage = () => {
     } finally {
       setIsCreatingPage(false);
     }
+  };
+
+  const handleSaveProjectSettings = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedProject) {
+      setErrorMessage('Select a website before editing settings.');
+      return;
+    }
+
+    if (selectedProject.ownerUserId !== currentUserId) {
+      setErrorMessage('You cannot edit a website that does not belong to your workspace.');
+      return;
+    }
+
+    const siteName = settingsSiteName.trim();
+    const siteSlug = createSlug(siteName);
+
+    if (!siteName || !siteSlug) {
+      setErrorMessage('Please enter a valid website name.');
+      return;
+    }
+
+    const slugAlreadyExists = projects.some((project) => {
+      return project.ItemId !== selectedProject.ItemId && project.siteSlug === siteSlug;
+    });
+
+    if (slugAlreadyExists) {
+      setErrorMessage('Another one of your websites already uses this slug.');
+      return;
+    }
+
+    try {
+      setIsSavingProjectSettings(true);
+      setErrorMessage('');
+      setSuccessMessage('');
+
+      await updateWebsiteProject(selectedProject.ItemId, {
+        siteName,
+        siteSlug,
+        description: settingsDescription.trim(),
+        isPublished: settingsIsPublished,
+        updatedAt: new Date().toISOString(),
+      });
+
+      setSuccessMessage(`${siteName} settings updated in SELISE Data Gateway.`);
+      setIsEditingProjectSettings(false);
+      await loadVibeBuilderData();
+    } catch (error) {
+      console.error('Failed to update website settings:', error);
+      setErrorMessage('Could not update website settings in SELISE Data Gateway.');
+    } finally {
+      setIsSavingProjectSettings(false);
+    }
+  };
+
+  const handleCancelProjectSettings = () => {
+    if (!selectedProject) {
+      return;
+    }
+
+    setSettingsSiteName(selectedProject.siteName);
+    setSettingsDescription(selectedProject.description ?? '');
+    setSettingsIsPublished(selectedProject.isPublished);
+    setIsEditingProjectSettings(false);
+    setErrorMessage('');
   };
 
   const handleDeletePage = async (page: WebsitePage) => {
@@ -449,18 +539,104 @@ export const VibeBuilderDashboardPage = () => {
               <p className="text-sm font-semibold text-blue-600">Selected Website</p>
               <h2 className="text-xl font-semibold">{selectedProject.siteName}</h2>
               <p className="mt-1 text-sm text-muted-foreground">{selectedProject.description}</p>
-              <Link
-                className="mt-3 inline-flex text-sm font-medium text-blue-600 underline"
-                to={`/site/${selectedProject.siteSlug}/home`}
-              >
-                View public website
-              </Link>
+              <p className="mt-1 text-sm text-muted-foreground">/{selectedProject.siteSlug}</p>
+
+              {selectedProject.isPublished ? (
+                <Link
+                  className="mt-3 inline-flex text-sm font-medium text-blue-600 underline"
+                  to={`/site/${selectedProject.siteSlug}/home`}
+                >
+                  View public website
+                </Link>
+              ) : (
+                <p className="mt-3 text-sm text-amber-600">
+                  This website is currently draft. Public route will show website not found.
+                </p>
+              )}
             </div>
 
-            <div className="rounded-full border px-3 py-1 text-sm">
-              {selectedProject.isPublished ? 'Published' : 'Draft'}
+            <div className="flex flex-col items-start gap-2 md:items-end">
+              <div className="rounded-full border px-3 py-1 text-sm">
+                {selectedProject.isPublished ? 'Published' : 'Draft'}
+              </div>
+
+              <button
+                className="rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+                onClick={() => setIsEditingProjectSettings((current) => !current)}
+                type="button"
+              >
+                {isEditingProjectSettings ? 'Close Settings' : 'Edit Website Settings'}
+              </button>
             </div>
           </div>
+
+          {isEditingProjectSettings && (
+            <form
+              className="mt-5 space-y-4 rounded-xl border bg-background p-4"
+              onSubmit={handleSaveProjectSettings}
+            >
+              <div>
+                <h3 className="font-semibold">Website Settings</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Update the website name, description, slug, and publish status.
+                </p>
+              </div>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-medium">Website Name</span>
+                <input
+                  className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
+                  value={settingsSiteName}
+                  onChange={(event) => setSettingsSiteName(event.target.value)}
+                />
+                <span className="block text-xs text-muted-foreground">
+                  New public slug preview: /{createSlug(settingsSiteName) || 'website-slug'}
+                </span>
+              </label>
+
+              <label className="block space-y-2">
+                <span className="text-sm font-medium">Website Description</span>
+                <textarea
+                  className="min-h-32 w-full rounded-lg border bg-card px-3 py-2 text-sm"
+                  value={settingsDescription}
+                  onChange={(event) => setSettingsDescription(event.target.value)}
+                />
+              </label>
+
+              <label className="flex items-center gap-3 rounded-lg border bg-card p-3 text-sm">
+                <input
+                  checked={settingsIsPublished}
+                  onChange={(event) => setSettingsIsPublished(event.target.checked)}
+                  type="checkbox"
+                />
+                <span>
+                  Published
+                  <span className="block text-xs text-muted-foreground">
+                    Published websites are visible through /site/slug/page. Draft websites stay
+                    hidden from the public route.
+                  </span>
+                </span>
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                  disabled={isSavingProjectSettings}
+                  type="submit"
+                >
+                  {isSavingProjectSettings ? 'Saving...' : 'Save Settings'}
+                </button>
+
+                <button
+                  className="rounded-lg border px-4 py-2 text-sm font-medium"
+                  onClick={handleCancelProjectSettings}
+                  type="button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
 
           <form
             className="mt-5 flex flex-col gap-3 rounded-xl border bg-background p-4 md:flex-row"
