@@ -41,6 +41,14 @@ type CreateWebsitePageInput = {
   isHomePage: boolean;
 };
 
+type UpdateWebsitePageInput = {
+  pageName?: string;
+  pageSlug?: string;
+  layoutJson?: string;
+  displayOrder?: number;
+  isHomePage?: boolean;
+};
+
 export const getWebsiteProjects = async (): Promise<WebsiteProjectResult> => {
   return graphqlClient.query<WebsiteProjectResult>({
     query: GET_WEBSITE_PROJECTS_QUERY,
@@ -84,18 +92,25 @@ export const createWebsitePage = async (input: CreateWebsitePageInput): Promise<
   });
 };
 
-export const updateWebsitePageLayout = async (
+export const updateWebsitePage = async (
   pageId: string,
-  layoutJson: string
+  input: UpdateWebsitePageInput
 ): Promise<UpdateWebsitePageResult> => {
   return graphqlClient.mutate<UpdateWebsitePageResult>({
     query: UPDATE_WEBSITE_PAGE_MUTATION,
     variables: {
       pageId,
-      input: {
-        layoutJson,
-      },
+      input,
     },
+  });
+};
+
+export const updateWebsitePageLayout = async (
+  pageId: string,
+  layoutJson: string
+): Promise<UpdateWebsitePageResult> => {
+  return updateWebsitePage(pageId, {
+    layoutJson,
   });
 };
 

@@ -7,6 +7,7 @@ import {
   deleteWebsitePage,
   getWebsitePages,
   getWebsiteProjects,
+  updateWebsitePage,
   updateWebsiteProject,
 } from '../../services/vibebuilder.service';
 import { WebsitePage, WebsiteProject } from '../../types/vibebuilder.types';
@@ -71,11 +72,17 @@ export const VibeBuilderDashboardPage = () => {
   const [isCreatingPage, setIsCreatingPage] = useState(false);
   const [isEditingProjectSettings, setIsEditingProjectSettings] = useState(false);
   const [isSavingProjectSettings, setIsSavingProjectSettings] = useState(false);
+  const [isSavingPageSettings, setIsSavingPageSettings] = useState(false);
   const [deletingPageId, setDeletingPageId] = useState('');
 
   const [settingsSiteName, setSettingsSiteName] = useState('');
   const [settingsDescription, setSettingsDescription] = useState('');
   const [settingsIsPublished, setSettingsIsPublished] = useState(true);
+
+  const [editingPageId, setEditingPageId] = useState('');
+  const [settingsPageName, setSettingsPageName] = useState('');
+  const [settingsPageSlug, setSettingsPageSlug] = useState('');
+  const [settingsPageIsHome, setSettingsPageIsHome] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -145,6 +152,7 @@ export const VibeBuilderDashboardPage = () => {
       setSettingsSiteName('');
       setSettingsDescription('');
       setSettingsIsPublished(true);
+      setEditingPageId('');
       return;
     }
 
@@ -152,6 +160,7 @@ export const VibeBuilderDashboardPage = () => {
     setSettingsDescription(selectedProject.description ?? '');
     setSettingsIsPublished(selectedProject.isPublished);
     setIsEditingProjectSettings(false);
+    setEditingPageId('');
   }, [selectedProject]);
 
   const selectedProjectPages = useMemo(() => {
@@ -163,6 +172,10 @@ export const VibeBuilderDashboardPage = () => {
       .filter((page) => page.projectId === selectedProject.ItemId)
       .sort((firstPage, secondPage) => firstPage.displayOrder - secondPage.displayOrder);
   }, [pages, selectedProject]);
+
+  const selectedProjectHomePage = useMemo(() => {
+    return selectedProjectPages.find((page) => page.isHomePage);
+  }, [selectedProjectPages]);
 
   const totalLayoutComponents = useMemo(() => {
     return pages.reduce((total, page) => total + getComponentCount(page.layoutJson), 0);
@@ -357,6 +370,101 @@ export const VibeBuilderDashboardPage = () => {
     setErrorMessage('');
   };
 
+  const startPageSettings = (page: WebsitePage) => {
+    setEditingPageId(page.ItemId);
+    setSettingsPageName(page.pageName);
+    setSettingsPageSlug(page.pageSlug);
+    setSettingsPageIsHome(page.isHomePage);
+    setErrorMessage('');
+    setSuccessMessage('');
+  };
+
+  const cancelPageSettings = () => {
+    setEditingPageId('');
+    setSettingsPageName('');
+    setSettingsPageSlug('');
+    setSettingsPageIsHome(false);
+    setErrorMessage('');
+  };
+
+  const handleSavePageSettings = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!selectedProject) {
+      setErrorMessage('Select a website before editing page settings.');
+      return;
+    }
+
+    const editingPage = selectedProjectPages.find((page) => page.ItemId === editingPageId);
+
+    if (!editingPage) {
+      setErrorMessage('Select a page before saving page settings.');
+      return;
+    }
+
+    if (editingPage.ownerUserId !== currentUserId) {
+      setErrorMessage('You cannot edit a page that does not belong to your workspace.');
+      return;
+    }
+
+    const pageName = settingsPageName.trim();
+    const pageSlug = createSlug(settingsPageSlug || settingsPageName);
+
+    if (!pageName || !pageSlug) {
+      setErrorMessage('Please enter a valid page name and slug.');
+      return;
+    }
+
+    const slugAlreadyExists = selectedProjectPages.some((page) => {
+      return page.ItemId !== editingPage.ItemId && page.pageSlug === pageSlug;
+    });
+
+    if (slugAlreadyExists) {
+      setErrorMessage('This website already has another page with this slug.');
+      return;
+    }
+
+    if (editingPage.isHomePage && !settingsPageIsHome) {
+      setErrorMessage('A website must have a Home page. Set another page as Home first.');
+      return;
+    }
+
+    try {
+      setIsSavingPageSettings(true);
+      setErrorMessage('');
+      setSuccessMessage('');
+
+      if (settingsPageIsHome) {
+        const oldHomePages = selectedProjectPages.filter((page) => {
+          return page.ItemId !== editingPage.ItemId && page.isHomePage;
+        });
+
+        await Promise.all(
+          oldHomePages.map((page) => {
+            return updateWebsitePage(page.ItemId, {
+              isHomePage: false,
+            });
+          })
+        );
+      }
+
+      await updateWebsitePage(editingPage.ItemId, {
+        pageName,
+        pageSlug,
+        isHomePage: settingsPageIsHome,
+      });
+
+      setSuccessMessage(`${pageName} page settings updated in SELISE Data Gateway.`);
+      setEditingPageId('');
+      await loadVibeBuilderData();
+    } catch (error) {
+      console.error('Failed to update page settings:', error);
+      setErrorMessage('Could not update page settings in SELISE Data Gateway.');
+    } finally {
+      setIsSavingPageSettings(false);
+    }
+  };
+
   const handleDeletePage = async (page: WebsitePage) => {
     if (page.ownerUserId !== currentUserId) {
       setErrorMessage('You cannot delete a page that does not belong to your workspace.');
@@ -504,7 +612,11 @@ export const VibeBuilderDashboardPage = () => {
                       ? 'border-blue-400 bg-blue-50'
                       : 'bg-background hover:border-blue-200'
                   }`}
-                  onClick={() => setSelectedProjectId(project.ItemId)}
+                  onClick={() => {
+                    setSelectedProjectId(project.ItemId);
+                    setEditingPageId('');
+                    setErrorMessage('');
+                  }}
                   type="button"
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -544,7 +656,9 @@ export const VibeBuilderDashboardPage = () => {
               {selectedProject.isPublished ? (
                 <Link
                   className="mt-3 inline-flex text-sm font-medium text-blue-600 underline"
-                  to={`/site/${selectedProject.siteSlug}/home`}
+                  to={`/site/${selectedProject.siteSlug}/${
+                    selectedProjectHomePage?.pageSlug ?? 'home'
+                  }`}
                 >
                   View public website
                 </Link>
@@ -693,6 +807,14 @@ export const VibeBuilderDashboardPage = () => {
                   </Link>
 
                   <button
+                    className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
+                    onClick={() => startPageSettings(page)}
+                    type="button"
+                  >
+                    Page Settings
+                  </button>
+
+                  <button
                     className="inline-flex rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={page.isHomePage || deletingPageId === page.ItemId}
                     onClick={() => handleDeletePage(page)}
@@ -701,6 +823,77 @@ export const VibeBuilderDashboardPage = () => {
                     {deletingPageId === page.ItemId ? 'Deleting...' : 'Delete'}
                   </button>
                 </div>
+
+                {editingPageId === page.ItemId && (
+                  <form
+                    className="mt-4 space-y-3 rounded-lg border bg-background p-3"
+                    onSubmit={handleSavePageSettings}
+                  >
+                    <div>
+                      <h4 className="font-semibold">Page Settings</h4>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Rename this page, update its slug, or set it as the Home page.
+                      </p>
+                    </div>
+
+                    <label className="block space-y-1">
+                      <span className="text-xs font-medium">Page Name</span>
+                      <input
+                        className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
+                        value={settingsPageName}
+                        onChange={(event) => {
+                          setSettingsPageName(event.target.value);
+                          setSettingsPageSlug(createSlug(event.target.value));
+                        }}
+                      />
+                    </label>
+
+                    <label className="block space-y-1">
+                      <span className="text-xs font-medium">Page Slug</span>
+                      <input
+                        className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
+                        value={settingsPageSlug}
+                        onChange={(event) => setSettingsPageSlug(createSlug(event.target.value))}
+                      />
+                      <span className="block text-xs text-muted-foreground">
+                        Public page URL: /site/{selectedProject.siteSlug}/
+                        {createSlug(settingsPageSlug) || 'page-slug'}
+                      </span>
+                    </label>
+
+                    <label className="flex items-center gap-3 rounded-lg border bg-card p-3 text-sm">
+                      <input
+                        checked={settingsPageIsHome}
+                        onChange={(event) => setSettingsPageIsHome(event.target.checked)}
+                        type="checkbox"
+                      />
+                      <span>
+                        Set as Home page
+                        <span className="block text-xs text-muted-foreground">
+                          Only one page should be Home inside each website.
+                        </span>
+                      </span>
+                    </label>
+
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+                        disabled={isSavingPageSettings}
+                        type="submit"
+                      >
+                        {isSavingPageSettings ? 'Saving...' : 'Save Page'}
+                      </button>
+
+                      <button
+                        className="rounded-lg border px-3 py-2 text-sm font-medium"
+                        onClick={cancelPageSettings}
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             ))}
 
