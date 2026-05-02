@@ -51,6 +51,23 @@ const createComponent = (type: LayoutComponentType): LayoutComponent => {
     };
   }
 
+  if (type === 'services') {
+    return {
+      id,
+      type,
+      props: {
+        title: 'Our Services',
+        subtitle: 'Highlight the main services or features offered by this website.',
+        serviceOneTitle: 'Strategy',
+        serviceOneBody: 'Plan the right direction with clear goals and useful decisions.',
+        serviceTwoTitle: 'Design',
+        serviceTwoBody: 'Create clean, modern, and user-friendly digital experiences.',
+        serviceThreeTitle: 'Delivery',
+        serviceThreeBody: 'Build and launch reliable solutions that are easy to maintain.',
+      },
+    };
+  }
+
   return {
     id,
     type,
@@ -399,6 +416,14 @@ export const VibeBuilderEditorPage = () => {
               >
                 + Image Block
               </button>
+
+              <button
+                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
+                onClick={() => addComponent('services')}
+                type="button"
+              >
+                + Services Block
+              </button>
             </div>
           </div>
 
@@ -619,6 +644,96 @@ export const VibeBuilderEditorPage = () => {
                       value={selectedComponent.props.caption ?? ''}
                       onChange={(event) =>
                         updateSelectedComponentProp('caption', event.target.value)
+                      }
+                    />
+                  </label>
+                </>
+              )}
+
+              {selectedComponent.type === 'services' && (
+                <>
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Section Title</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.title ?? ''}
+                      onChange={(event) => updateSelectedComponentProp('title', event.target.value)}
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Section Subtitle</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.subtitle ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('subtitle', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 1 Title</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceOneTitle ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceOneTitle', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 1 Body</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceOneBody ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceOneBody', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 2 Title</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceTwoTitle ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceTwoTitle', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 2 Body</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceTwoBody ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceTwoBody', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 3 Title</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceThreeTitle ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceThreeTitle', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Service 3 Body</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.serviceThreeBody ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('serviceThreeBody', event.target.value)
                       }
                     />
                   </label>

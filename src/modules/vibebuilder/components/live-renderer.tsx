@@ -80,6 +80,43 @@ const ImageBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   );
 };
 
+const ServicesBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
+  const services = [
+    {
+      title: props?.serviceOneTitle || 'Service One',
+      body: props?.serviceOneBody || 'Describe the first service or feature.',
+    },
+    {
+      title: props?.serviceTwoTitle || 'Service Two',
+      body: props?.serviceTwoBody || 'Describe the second service or feature.',
+    },
+    {
+      title: props?.serviceThreeTitle || 'Service Three',
+      body: props?.serviceThreeBody || 'Describe the third service or feature.',
+    },
+  ];
+
+  return (
+    <section className="rounded-2xl border bg-card p-8 shadow-sm">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">{props?.title || 'Services'}</h2>
+        {props?.subtitle && (
+          <p className="mt-3 max-w-2xl text-muted-foreground">{props.subtitle}</p>
+        )}
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {services.map((service) => (
+          <div key={service.title} className="rounded-xl border bg-background p-5">
+            <h3 className="font-semibold">{service.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{service.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const UnknownBlock = ({ component }: { component: LayoutComponent }) => {
   return (
     <section className="rounded-2xl border border-dashed bg-card p-6 text-muted-foreground">
@@ -116,6 +153,10 @@ export const LiveRenderer = ({ layoutJson }: LiveRendererProps) => {
 
         if (component.type === 'image') {
           return <ImageBlock key={component.id} props={component.props} />;
+        }
+
+        if (component.type === 'services') {
+          return <ServicesBlock key={component.id} props={component.props} />;
         }
 
         return <UnknownBlock key={component.id} component={component} />;

@@ -20,7 +20,7 @@ export type WebsitePage = {
   isHomePage: boolean;
 };
 
-export type LayoutComponentType = 'hero' | 'text' | 'cta' | 'image';
+export type LayoutComponentType = 'hero' | 'text' | 'cta' | 'image' | 'services';
 
 export type LayoutComponent = {
   id: string;
@@ -34,6 +34,12 @@ export type LayoutComponent = {
     imageUrl?: string;
     altText?: string;
     caption?: string;
+    serviceOneTitle?: string;
+    serviceOneBody?: string;
+    serviceTwoTitle?: string;
+    serviceTwoBody?: string;
+    serviceThreeTitle?: string;
+    serviceThreeBody?: string;
   };
 };
 
