@@ -1,4 +1,5 @@
-import { DragEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import type { DragEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { LiveRenderer } from '../../components/live-renderer';
 import { getWebsitePages, updateWebsitePageLayout } from '../../services/vibebuilder.service';
@@ -8,6 +9,7 @@ import {
   LayoutData,
   WebsitePage,
 } from '../../types/vibebuilder.types';
+import { generateLayoutFromPrompt } from '../../utils/prompt-layout-generator';
 
 const createComponent = (type: LayoutComponentType): LayoutComponent => {
   const id = `${type}_${Date.now()}`;
@@ -68,6 +70,8 @@ export const VibeBuilderEditorPage = () => {
   const [components, setComponents] = useState<LayoutComponent[]>([]);
   const [selectedComponentId, setSelectedComponentId] = useState('');
   const [draggedComponentId, setDraggedComponentId] = useState('');
+  const [promptText, setPromptText] = useState('');
+  const [isGeneratingFromPrompt, setIsGeneratingFromPrompt] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -188,7 +192,9 @@ export const VibeBuilderEditorPage = () => {
       const draggedIndex = currentComponents.findIndex(
         (component) => component.id === draggedComponentId
       );
-      const targetIndex = currentComponents.findIndex((component) => component.id === targetComponentId);
+      const targetIndex = currentComponents.findIndex(
+        (component) => component.id === targetComponentId
+      );
 
       if (draggedIndex === -1 || targetIndex === -1) {
         return currentComponents;
@@ -203,6 +209,26 @@ export const VibeBuilderEditorPage = () => {
 
     setDraggedComponentId('');
     setSuccessMessage('');
+  };
+
+  const handleGenerateFromPrompt = () => {
+    const cleanPrompt = promptText.trim();
+
+    if (!cleanPrompt) {
+      setErrorMessage('Write a prompt first, then generate a layout.');
+      return;
+    }
+
+    setIsGeneratingFromPrompt(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    const generatedComponents = generateLayoutFromPrompt(cleanPrompt);
+
+    setComponents(generatedComponents);
+    setSelectedComponentId(generatedComponents[0]?.id ?? '');
+    setSuccessMessage('Prompt converted into editable layoutJson. Review it, then save.');
+    setIsGeneratingFromPrompt(false);
   };
 
   const saveLayout = async () => {
@@ -268,7 +294,8 @@ export const VibeBuilderEditorPage = () => {
           <p className="text-sm font-semibold text-blue-600">VibeBuilder Editor</p>
           <h1 className="text-3xl font-bold tracking-tight">{activePage.pageName}</h1>
           <p className="mt-2 text-muted-foreground">
-            Editing /{activePage.pageSlug}. Add, edit, reorder, and save page blocks as layoutJson.
+            Editing /{activePage.pageSlug}. Add, edit, reorder, prompt-generate, and save page
+            blocks as layoutJson.
           </p>
         </div>
 
@@ -303,7 +330,7 @@ export const VibeBuilderEditorPage = () => {
         </div>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[260px_1fr_340px]">
+      <div className="grid gap-4 xl:grid-cols-[280px_1fr_340px]">
         <aside className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm">
           <div>
             <h2 className="font-semibold">Pages</h2>
@@ -352,6 +379,34 @@ export const VibeBuilderEditorPage = () => {
                 + CTA Block
               </button>
             </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h2 className="font-semibold">Prompt Builder</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Describe the page you want. VibeBuilder will generate editable layoutJson.
+            </p>
+
+            <textarea
+              className="mt-3 min-h-28 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              placeholder="Example: Make me a portfolio homepage with hero, about section, and contact CTA"
+              value={promptText}
+              onChange={(event) => setPromptText(event.target.value)}
+            />
+
+            <button
+              className="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
+              disabled={isGeneratingFromPrompt}
+              onClick={handleGenerateFromPrompt}
+              type="button"
+            >
+              {isGeneratingFromPrompt ? 'Generating...' : 'Generate Layout'}
+            </button>
+
+            <p className="mt-2 text-xs text-muted-foreground">
+              Generated blocks are editable. Click Save layoutJson to persist them in SELISE Data
+              Gateway.
+            </p>
           </div>
         </aside>
 
@@ -423,7 +478,8 @@ export const VibeBuilderEditorPage = () => {
 
             {components.length === 0 && (
               <div className="rounded-2xl border border-dashed bg-card p-8 text-center text-muted-foreground">
-                No blocks yet. Add a block from the Component Library.
+                No blocks yet. Add a block from the Component Library or generate a layout from a
+                prompt.
               </div>
             )}
           </div>
