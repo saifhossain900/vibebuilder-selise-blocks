@@ -8,11 +8,9 @@ RUN npm install
 
 COPY . .
 
-ARG ci_build=dev
-
 RUN mkdir -p /app/log
 
-RUN if [ -z "$ci_build" ]; then npm run build; else npm run build:${ci_build}; fi
+RUN npm run build
 
 RUN npm install -g serve
 
