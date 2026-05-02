@@ -1,12 +1,4 @@
-type LayoutComponent = {
-  id: string;
-  type: string;
-  props?: Record<string, string | undefined>;
-};
-
-type LayoutData = {
-  components?: LayoutComponent[];
-};
+import { LayoutComponent, LayoutData } from '../types/vibebuilder.types';
 
 type LiveRendererProps = {
   layoutJson: string;
@@ -14,7 +6,7 @@ type LiveRendererProps = {
 
 const parseLayoutJson = (layoutJson: string): LayoutComponent[] => {
   try {
-    const parsedLayout = JSON.parse(layoutJson) as LayoutData;
+    const parsedLayout = JSON.parse(layoutJson) as Partial<LayoutData>;
     return Array.isArray(parsedLayout.components) ? parsedLayout.components : [];
   } catch {
     return [];
@@ -49,6 +41,20 @@ const TextBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   );
 };
 
+const CtaBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
+  return (
+    <section className="rounded-2xl border bg-blue-50 p-8 shadow-sm">
+      <h2 className="text-3xl font-bold tracking-tight">{props?.title || 'Call to Action'}</h2>
+      {props?.subtitle && <p className="mt-3 max-w-2xl text-muted-foreground">{props.subtitle}</p>}
+      {props?.buttonText && (
+        <button className="mt-6 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white">
+          {props.buttonText}
+        </button>
+      )}
+    </section>
+  );
+};
+
 const UnknownBlock = ({ component }: { component: LayoutComponent }) => {
   return (
     <section className="rounded-2xl border border-dashed bg-card p-6 text-muted-foreground">
@@ -77,6 +83,10 @@ export const LiveRenderer = ({ layoutJson }: LiveRendererProps) => {
 
         if (component.type === 'text') {
           return <TextBlock key={component.id} props={component.props} />;
+        }
+
+        if (component.type === 'cta') {
+          return <CtaBlock key={component.id} props={component.props} />;
         }
 
         return <UnknownBlock key={component.id} component={component} />;

@@ -20,6 +20,24 @@ export type WebsitePage = {
   isHomePage: boolean;
 };
 
+export type LayoutComponentType = 'hero' | 'text' | 'cta';
+
+export type LayoutComponent = {
+  id: string;
+  type: LayoutComponentType;
+  props: {
+    title?: string;
+    subtitle?: string;
+    buttonText?: string;
+    heading?: string;
+    body?: string;
+  };
+};
+
+export type LayoutData = {
+  components: LayoutComponent[];
+};
+
 export type WebsiteProjectResult = {
   getWebsiteProjects: {
     items: WebsiteProject[];
@@ -31,5 +49,14 @@ export type WebsitePageResult = {
   getWebsitePages: {
     items: WebsitePage[];
     totalCount: number;
+  };
+};
+
+export type UpdateWebsitePageResult = {
+  updateWebsitePage: {
+    itemId?: string;
+    totalImpactedData?: number;
+    acknowledged?: boolean;
+    __typename?: string;
   };
 };
