@@ -38,6 +38,17 @@ const getPromptTheme = (prompt: string) => {
       serviceTwoBody: 'Turn ideas and requirements into practical digital solutions.',
       serviceThreeTitle: 'Project Delivery',
       serviceThreeBody: 'Create organized, reliable, and presentation-ready work.',
+      testimonialsTitle: 'Recommendations',
+      testimonialsSubtitle: 'Show trust through feedback from people you worked with.',
+      testimonialOneName: 'Project Partner',
+      testimonialOneQuote:
+        'The work was organized, clear, and easy to understand from start to finish.',
+      testimonialTwoName: 'Team Member',
+      testimonialTwoQuote:
+        'A reliable person who can turn ideas into practical project results.',
+      testimonialThreeName: 'Client',
+      testimonialThreeQuote:
+        'The final website feels clean, professional, and ready to present.',
       ctaTitle: 'Let’s Work Together',
       ctaSubtitle: 'Reach out to discuss projects, collaborations, or opportunities.',
       buttonText: 'Contact Me',
@@ -66,6 +77,17 @@ const getPromptTheme = (prompt: string) => {
       serviceTwoBody: 'Feature your most popular meals and customer favorites.',
       serviceThreeTitle: 'Easy Ordering',
       serviceThreeBody: 'Guide customers to reserve, order, or contact quickly.',
+      testimonialsTitle: 'Happy Customers',
+      testimonialsSubtitle: 'Use customer feedback to build trust and interest.',
+      testimonialOneName: 'Regular Guest',
+      testimonialOneQuote:
+        'The food feels fresh, warm, and full of flavor every time.',
+      testimonialTwoName: 'Food Lover',
+      testimonialTwoQuote:
+        'A welcoming place with great service and a memorable experience.',
+      testimonialThreeName: 'Local Customer',
+      testimonialThreeQuote:
+        'Easy to order, easy to enjoy, and always worth coming back.',
       ctaTitle: 'Reserve or Order Today',
       ctaSubtitle: 'Make your next meal simple, fresh, and memorable.',
       buttonText: 'Order Now',
@@ -94,6 +116,17 @@ const getPromptTheme = (prompt: string) => {
       serviceTwoBody: 'Create modern, clean, and professional digital experiences.',
       serviceThreeTitle: 'Delivery',
       serviceThreeBody: 'Launch reliable solutions that are easy to manage and scale.',
+      testimonialsTitle: 'Client Feedback',
+      testimonialsSubtitle: 'Build credibility with proof from satisfied clients.',
+      testimonialOneName: 'Startup Founder',
+      testimonialOneQuote:
+        'The team helped us present our business clearly and professionally.',
+      testimonialTwoName: 'Business Owner',
+      testimonialTwoQuote:
+        'The process was simple, organized, and focused on real results.',
+      testimonialThreeName: 'Marketing Lead',
+      testimonialThreeQuote:
+        'The final website made our services easier to understand and trust.',
       ctaTitle: 'Start Your Project',
       ctaSubtitle: 'Tell us what you need and we will help you move forward.',
       buttonText: 'Get Started',
@@ -122,6 +155,17 @@ const getPromptTheme = (prompt: string) => {
       serviceTwoBody: 'Make product discovery and purchase decisions easy.',
       serviceThreeTitle: 'Customer Trust',
       serviceThreeBody: 'Build confidence with reliability, support, and clear value.',
+      testimonialsTitle: 'Customer Reviews',
+      testimonialsSubtitle: 'Use reviews to make new visitors feel confident.',
+      testimonialOneName: 'Verified Buyer',
+      testimonialOneQuote:
+        'The product was exactly what I needed and easy to understand.',
+      testimonialTwoName: 'Returning Customer',
+      testimonialTwoQuote:
+        'A simple shopping experience with clear product information.',
+      testimonialThreeName: 'Happy Customer',
+      testimonialThreeQuote:
+        'The website helped me choose quickly and confidently.',
       ctaTitle: 'Ready to Shop?',
       ctaSubtitle: 'Browse the collection and find what fits your needs.',
       buttonText: 'Shop Now',
@@ -145,6 +189,14 @@ const getPromptTheme = (prompt: string) => {
     serviceTwoBody: 'Change text, images, layout, and content easily.',
     serviceThreeTitle: 'Public Website',
     serviceThreeBody: 'Publish the page and share it through a live URL.',
+    testimonialsTitle: 'What People Say',
+    testimonialsSubtitle: 'Add feedback to make the page feel more trustworthy.',
+    testimonialOneName: 'Visitor One',
+    testimonialOneQuote: 'The page is clear, organized, and easy to understand.',
+    testimonialTwoName: 'Visitor Two',
+    testimonialTwoQuote: 'The sections explain the website purpose very well.',
+    testimonialThreeName: 'Visitor Three',
+    testimonialThreeQuote: 'A professional layout that is ready to customize.',
     ctaTitle: 'Ready to Continue?',
     ctaSubtitle: 'Customize this layout and publish your website with VibeBuilder.',
     buttonText: 'Get Started',
@@ -193,6 +245,20 @@ export const generateLayoutFromPrompt = (prompt: string): LayoutComponent[] => {
       props: {
         heading: theme.sectionHeading,
         body: theme.sectionBody,
+      },
+    },
+    {
+      id: createId('testimonials'),
+      type: 'testimonials',
+      props: {
+        title: theme.testimonialsTitle,
+        subtitle: theme.testimonialsSubtitle,
+        testimonialOneName: theme.testimonialOneName,
+        testimonialOneQuote: theme.testimonialOneQuote,
+        testimonialTwoName: theme.testimonialTwoName,
+        testimonialTwoQuote: theme.testimonialTwoQuote,
+        testimonialThreeName: theme.testimonialThreeName,
+        testimonialThreeQuote: theme.testimonialThreeQuote,
       },
     },
     {
