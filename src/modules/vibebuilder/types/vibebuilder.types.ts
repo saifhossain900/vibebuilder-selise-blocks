@@ -35,6 +35,7 @@ export type LayoutComponent = {
     title?: string;
     subtitle?: string;
     buttonText?: string;
+    buttonLink?: string;
     heading?: string;
     body?: string;
     imageUrl?: string;

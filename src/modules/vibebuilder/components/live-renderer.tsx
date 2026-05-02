@@ -13,20 +13,36 @@ const parseLayoutJson = (layoutJson: string): LayoutComponent[] => {
   }
 };
 
+const getButtonHref = (buttonLink?: string): string => {
+  const cleanLink = buttonLink?.trim();
+
+  if (!cleanLink) {
+    return '#';
+  }
+
+  return cleanLink;
+};
+
 const HeroBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   return (
     <section className="rounded-2xl border bg-gradient-to-br from-slate-950 to-slate-800 p-8 text-white shadow-sm">
       <p className="text-sm font-semibold uppercase tracking-wide text-blue-200">
         Built with VibeBuilder
       </p>
+
       <h1 className="mt-4 text-4xl font-bold tracking-tight">
         {props?.title || 'Untitled Hero Section'}
       </h1>
+
       {props?.subtitle && <p className="mt-3 max-w-2xl text-slate-200">{props.subtitle}</p>}
+
       {props?.buttonText && (
-        <button className="mt-6 rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
+        <a
+          className="mt-6 inline-flex rounded-lg bg-white px-4 py-2 font-medium text-slate-950 transition hover:bg-slate-100"
+          href={getButtonHref(props.buttonLink)}
+        >
           {props.buttonText}
-        </button>
+        </a>
       )}
     </section>
   );
@@ -45,11 +61,16 @@ const CtaBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   return (
     <section className="rounded-2xl border bg-blue-50 p-8 shadow-sm">
       <h2 className="text-3xl font-bold tracking-tight">{props?.title || 'Call to Action'}</h2>
+
       {props?.subtitle && <p className="mt-3 max-w-2xl text-muted-foreground">{props.subtitle}</p>}
+
       {props?.buttonText && (
-        <button className="mt-6 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white">
+        <a
+          className="mt-6 inline-flex rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-700"
+          href={getButtonHref(props.buttonLink)}
+        >
           {props.buttonText}
-        </button>
+        </a>
       )}
     </section>
   );
@@ -145,6 +166,7 @@ const TestimonialsBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
         <h2 className="text-3xl font-bold tracking-tight">
           {props?.title || 'What People Say'}
         </h2>
+
         {props?.subtitle && (
           <p className="mt-3 max-w-2xl text-muted-foreground">{props.subtitle}</p>
         )}
@@ -153,7 +175,9 @@ const TestimonialsBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {testimonials.map((testimonial) => (
           <div key={testimonial.name} className="rounded-xl border bg-card p-5 shadow-sm">
-            <p className="text-sm leading-6 text-muted-foreground">“{testimonial.quote}”</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {`"${testimonial.quote}"`}
+            </p>
             <p className="mt-4 font-semibold">{testimonial.name}</p>
           </div>
         ))}

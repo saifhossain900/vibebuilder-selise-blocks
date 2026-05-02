@@ -22,6 +22,7 @@ const createComponent = (type: LayoutComponentType): LayoutComponent => {
         title: 'New Hero Section',
         subtitle: 'Describe your website or page here.',
         buttonText: 'Get Started',
+        buttonLink: '#',
       },
     };
   }
@@ -34,6 +35,7 @@ const createComponent = (type: LayoutComponentType): LayoutComponent => {
         title: 'Ready to take action?',
         subtitle: 'Add a short message and guide visitors to the next step.',
         buttonText: 'Contact Now',
+        buttonLink: '#',
       },
     };
   }
@@ -611,6 +613,21 @@ export const VibeBuilderEditorPage = () => {
                         updateSelectedComponentProp('buttonText', event.target.value)
                       }
                     />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Button Link</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      placeholder="#, /site/agency-site/contact, mailto:hello@example.com"
+                      value={selectedComponent.props.buttonLink ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('buttonLink', event.target.value)
+                      }
+                    />
+                    <span className="block text-xs text-muted-foreground">
+                      Use #, a public page path, mailto:, tel:, or a full https:// link.
+                    </span>
                   </label>
                 </>
               )}
