@@ -55,6 +55,31 @@ const CtaBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   );
 };
 
+const ImageBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
+  return (
+    <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+      {props?.imageUrl ? (
+        <img
+          alt={props.altText || 'VibeBuilder image block'}
+          className="h-72 w-full object-cover"
+          src={props.imageUrl}
+        />
+      ) : (
+        <div className="flex h-72 items-center justify-center bg-slate-100 text-sm text-muted-foreground">
+          Add an image URL from the Properties Panel.
+        </div>
+      )}
+
+      {(props?.caption || props?.altText) && (
+        <div className="p-4">
+          {props.caption && <p className="font-medium">{props.caption}</p>}
+          {props.altText && <p className="mt-1 text-sm text-muted-foreground">{props.altText}</p>}
+        </div>
+      )}
+    </section>
+  );
+};
+
 const UnknownBlock = ({ component }: { component: LayoutComponent }) => {
   return (
     <section className="rounded-2xl border border-dashed bg-card p-6 text-muted-foreground">
@@ -87,6 +112,10 @@ export const LiveRenderer = ({ layoutJson }: LiveRendererProps) => {
 
         if (component.type === 'cta') {
           return <CtaBlock key={component.id} props={component.props} />;
+        }
+
+        if (component.type === 'image') {
+          return <ImageBlock key={component.id} props={component.props} />;
         }
 
         return <UnknownBlock key={component.id} component={component} />;

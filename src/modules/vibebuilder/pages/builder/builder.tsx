@@ -38,6 +38,19 @@ const createComponent = (type: LayoutComponentType): LayoutComponent => {
     };
   }
 
+  if (type === 'image') {
+    return {
+      id,
+      type,
+      props: {
+        imageUrl:
+          'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
+        altText: 'Workspace desk with laptop',
+        caption: 'A professional image section for your website.',
+      },
+    };
+  }
+
   return {
     id,
     type,
@@ -378,6 +391,14 @@ export const VibeBuilderEditorPage = () => {
               >
                 + CTA Block
               </button>
+
+              <button
+                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
+                onClick={() => addComponent('image')}
+                type="button"
+              >
+                + Image Block
+              </button>
             </div>
           </div>
 
@@ -562,6 +583,43 @@ export const VibeBuilderEditorPage = () => {
                       className="min-h-32 w-full rounded-lg border bg-background px-3 py-2 text-sm"
                       value={selectedComponent.props.body ?? ''}
                       onChange={(event) => updateSelectedComponentProp('body', event.target.value)}
+                    />
+                  </label>
+                </>
+              )}
+
+              {selectedComponent.type === 'image' && (
+                <>
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Image URL</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.imageUrl ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('imageUrl', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Alt Text</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.altText ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('altText', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Caption</span>
+                    <textarea
+                      className="min-h-24 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.caption ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('caption', event.target.value)
+                      }
                     />
                   </label>
                 </>

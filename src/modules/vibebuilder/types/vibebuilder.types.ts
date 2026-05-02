@@ -20,7 +20,7 @@ export type WebsitePage = {
   isHomePage: boolean;
 };
 
-export type LayoutComponentType = 'hero' | 'text' | 'cta';
+export type LayoutComponentType = 'hero' | 'text' | 'cta' | 'image';
 
 export type LayoutComponent = {
   id: string;
@@ -31,6 +31,9 @@ export type LayoutComponent = {
     buttonText?: string;
     heading?: string;
     body?: string;
+    imageUrl?: string;
+    altText?: string;
+    caption?: string;
   };
 };
 
