@@ -1,4 +1,4 @@
-FROM node:21.7.0-alpine AS builder
+FROM node:21.7.0-alpine AS app
 
 WORKDIR /app
 
@@ -8,14 +8,14 @@ RUN npm install
 
 COPY . .
 
-ARG ci_build
+ARG ci_build=dev
 
 RUN mkdir -p /app/log
 
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build:${ci_build}
+RUN if [ -z "$ci_build" ]; then npm run build; else npm run build:${ci_build}; fi
 
-FROM nginx:stable-alpine
+RUN npm install -g serve
 
-COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 80
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+CMD ["serve", "-s", "build", "-l", "80"]
