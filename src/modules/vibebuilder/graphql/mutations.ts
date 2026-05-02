@@ -1,3 +1,11 @@
+export const INSERT_WEBSITE_PROJECT_MUTATION = `
+  mutation InsertWebsiteProject($input: WebsiteProjectInsertInput!) {
+    insertWebsiteProject(input: $input) {
+      __typename
+    }
+  }
+`;
+
 export const INSERT_WEBSITE_PAGE_MUTATION = `
   mutation InsertWebsitePage($input: WebsitePageInsertInput!) {
     insertWebsitePage(input: $input) {
