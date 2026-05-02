@@ -59,6 +59,7 @@ export const VibeBuilderDashboardPage = () => {
 
   const [projects, setProjects] = useState<WebsiteProject[]>([]);
   const [pages, setPages] = useState<WebsitePage[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [newWebsiteName, setNewWebsiteName] = useState('');
   const [newWebsiteDescription, setNewWebsiteDescription] = useState('');
   const [newPageName, setNewPageName] = useState('');
@@ -96,6 +97,17 @@ export const VibeBuilderDashboardPage = () => {
 
       setProjects(myProjects);
       setPages(myPages);
+
+      setSelectedProjectId((currentSelectedProjectId) => {
+        if (
+          currentSelectedProjectId &&
+          myProjects.some((project) => project.ItemId === currentSelectedProjectId)
+        ) {
+          return currentSelectedProjectId;
+        }
+
+        return myProjects[0]?.ItemId ?? '';
+      });
     } catch (error) {
       console.error('Failed to load VibeBuilder data:', error);
       setErrorMessage('Could not load VibeBuilder data from SELISE Data Gateway.');
@@ -114,13 +126,23 @@ export const VibeBuilderDashboardPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
 
-  const sortedPages = useMemo(() => {
-    return [...pages].sort((firstPage, secondPage) => {
-      return firstPage.displayOrder - secondPage.displayOrder;
-    });
-  }, [pages]);
+  const selectedProject = useMemo(() => {
+    return projects.find((project) => project.ItemId === selectedProjectId);
+  }, [projects, selectedProjectId]);
 
-  const firstProject = projects[0];
+  const selectedProjectPages = useMemo(() => {
+    if (!selectedProject) {
+      return [];
+    }
+
+    return [...pages]
+      .filter((page) => page.projectId === selectedProject.ItemId)
+      .sort((firstPage, secondPage) => firstPage.displayOrder - secondPage.displayOrder);
+  }, [pages, selectedProject]);
+
+  const totalLayoutComponents = useMemo(() => {
+    return pages.reduce((total, page) => total + getComponentCount(page.layoutJson), 0);
+  }, [pages]);
 
   const handleCreateWebsite = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -160,8 +182,6 @@ export const VibeBuilderDashboardPage = () => {
         isPublished: true,
       });
 
-      await loadVibeBuilderData();
-
       const projectResult = await getWebsiteProjects();
       const createdProject = (projectResult.getWebsiteProjects.items ?? [])
         .filter((project) => project.ownerUserId === currentUserId)
@@ -177,6 +197,8 @@ export const VibeBuilderDashboardPage = () => {
           displayOrder: 1,
           isHomePage: true,
         });
+
+        setSelectedProjectId(createdProject.ItemId);
       }
 
       setNewWebsiteName('');
@@ -199,8 +221,8 @@ export const VibeBuilderDashboardPage = () => {
       return;
     }
 
-    if (!firstProject) {
-      setErrorMessage('Create a WebsiteProject first before adding pages.');
+    if (!selectedProject) {
+      setErrorMessage('Select or create a website before adding pages.');
       return;
     }
 
@@ -212,10 +234,10 @@ export const VibeBuilderDashboardPage = () => {
       return;
     }
 
-    const slugAlreadyExists = pages.some((page) => page.pageSlug === pageSlug);
+    const slugAlreadyExists = selectedProjectPages.some((page) => page.pageSlug === pageSlug);
 
     if (slugAlreadyExists) {
-      setErrorMessage('A page with this slug already exists. Use another page name.');
+      setErrorMessage('This website already has a page with this slug. Use another page name.');
       return;
     }
 
@@ -225,17 +247,17 @@ export const VibeBuilderDashboardPage = () => {
       setSuccessMessage('');
 
       await createWebsitePage({
-        projectId: firstProject.ItemId,
+        projectId: selectedProject.ItemId,
         ownerUserId: currentUserId,
         pageName,
         pageSlug,
         layoutJson: createDefaultLayoutJson(pageName),
-        displayOrder: sortedPages.length + 1,
+        displayOrder: selectedProjectPages.length + 1,
         isHomePage: false,
       });
 
       setNewPageName('');
-      setSuccessMessage(`${pageName} page created in SELISE Data Gateway.`);
+      setSuccessMessage(`${pageName} page created in ${selectedProject.siteName}.`);
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to create page:', error);
@@ -296,7 +318,7 @@ export const VibeBuilderDashboardPage = () => {
           <h2 className="font-semibold">My Website Projects</h2>
           <p className="mt-2 text-3xl font-bold">{projects.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Filtered by your SELISE IAM account.
+            All websites owned by your SELISE IAM account.
           </p>
         </div>
 
@@ -304,15 +326,13 @@ export const VibeBuilderDashboardPage = () => {
           <h2 className="font-semibold">My Pages</h2>
           <p className="mt-2 text-3xl font-bold">{pages.length}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Only pages owned by your workspace.
+            Total pages across all your websites.
           </p>
         </div>
 
         <div className="rounded-xl border bg-card p-5 shadow-sm">
           <h2 className="font-semibold">Layout JSON</h2>
-          <p className="mt-2 text-3xl font-bold">
-            {pages.reduce((total, page) => total + getComponentCount(page.layoutJson), 0)}
-          </p>
+          <p className="mt-2 text-3xl font-bold">{totalLayoutComponents}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Serialized components stored in SELISE Data Gateway.
           </p>
@@ -337,56 +357,108 @@ export const VibeBuilderDashboardPage = () => {
         </div>
       )}
 
-      {!isLoading && currentUserId && !firstProject && (
+      {!isLoading && currentUserId && (
         <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">Create your first website</h2>
+          <h2 className="text-xl font-semibold">Create another website</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            This creates a WebsiteProject and an automatic Home page using your SELISE IAM account
-            as the owner.
+            Each website becomes a WebsiteProject record and receives an automatic Home page.
           </p>
 
           <form className="mt-5 space-y-3" onSubmit={handleCreateWebsite}>
-            <input
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              placeholder="Website name, e.g. Saif Portfolio"
-              value={newWebsiteName}
-              onChange={(event) => setNewWebsiteName(event.target.value)}
-            />
+            <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+              <input
+                className="rounded-lg border bg-background px-3 py-2 text-sm"
+                placeholder="Website name, e.g. Agency Site"
+                value={newWebsiteName}
+                onChange={(event) => setNewWebsiteName(event.target.value)}
+              />
+
+              <button
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                disabled={isCreatingWebsite}
+                type="submit"
+              >
+                {isCreatingWebsite ? 'Creating...' : 'Create Website'}
+              </button>
+            </div>
 
             <textarea
-              className="min-h-24 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              placeholder="Short website description"
+              className="min-h-28 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+              placeholder="Website description. You can write a longer description here."
               value={newWebsiteDescription}
               onChange={(event) => setNewWebsiteDescription(event.target.value)}
             />
-
-            <button
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-              disabled={isCreatingWebsite}
-              type="submit"
-            >
-              {isCreatingWebsite ? 'Creating Website...' : 'Create Website'}
-            </button>
           </form>
         </div>
       )}
 
-      {!isLoading && firstProject && (
+      {!isLoading && projects.length > 0 && (
+        <div className="rounded-xl border bg-card p-5 shadow-sm">
+          <h2 className="text-xl font-semibold">My Websites</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Select a website to manage its pages.
+          </p>
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {projects.map((project) => {
+              const projectPageCount = pages.filter(
+                (page) => page.projectId === project.ItemId
+              ).length;
+              const isSelected = project.ItemId === selectedProjectId;
+
+              return (
+                <button
+                  key={project.ItemId}
+                  className={`rounded-xl border p-4 text-left transition ${
+                    isSelected
+                      ? 'border-blue-400 bg-blue-50'
+                      : 'bg-background hover:border-blue-200'
+                  }`}
+                  onClick={() => setSelectedProjectId(project.ItemId)}
+                  type="button"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold">{project.siteName}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">/{project.siteSlug}</p>
+                    </div>
+
+                    <span className="rounded-full border bg-card px-2 py-1 text-xs">
+                      {project.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
+
+                  <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
+                    {project.description}
+                  </p>
+
+                  <p className="mt-3 text-sm">
+                    Pages: <span className="font-semibold">{projectPageCount}</span>
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {!isLoading && selectedProject && (
         <div className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">{firstProject.siteName}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{firstProject.description}</p>
+              <p className="text-sm font-semibold text-blue-600">Selected Website</p>
+              <h2 className="text-xl font-semibold">{selectedProject.siteName}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{selectedProject.description}</p>
               <Link
                 className="mt-3 inline-flex text-sm font-medium text-blue-600 underline"
-                to={`/site/${firstProject.siteSlug}/home`}
+                to={`/site/${selectedProject.siteSlug}/home`}
               >
                 View public website
               </Link>
             </div>
 
             <div className="rounded-full border px-3 py-1 text-sm">
-              {firstProject.isPublished ? 'Published' : 'Draft'}
+              {selectedProject.isPublished ? 'Published' : 'Draft'}
             </div>
           </div>
 
@@ -411,7 +483,7 @@ export const VibeBuilderDashboardPage = () => {
           </form>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {sortedPages.map((page) => (
+            {selectedProjectPages.map((page) => (
               <div key={page.ItemId} className="rounded-lg border p-4">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="font-semibold">{page.pageName}</h3>
@@ -437,6 +509,13 @@ export const VibeBuilderDashboardPage = () => {
                     Open Builder
                   </Link>
 
+                  <Link
+                    className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    to={`/site/${selectedProject.siteSlug}/${page.pageSlug}`}
+                  >
+                    View Page
+                  </Link>
+
                   <button
                     className="inline-flex rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={page.isHomePage || deletingPageId === page.ItemId}
@@ -448,7 +527,19 @@ export const VibeBuilderDashboardPage = () => {
                 </div>
               </div>
             ))}
+
+            {selectedProjectPages.length === 0 && (
+              <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+                No pages found for this website yet.
+              </div>
+            )}
           </div>
+        </div>
+      )}
+
+      {!isLoading && currentUserId && projects.length === 0 && (
+        <div className="rounded-xl border border-dashed bg-card p-5 text-muted-foreground">
+          You do not have a website yet. Create your first website above.
         </div>
       )}
 
