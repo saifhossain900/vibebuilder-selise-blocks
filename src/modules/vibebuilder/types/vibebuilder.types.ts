@@ -20,7 +20,13 @@ export type WebsitePage = {
   isHomePage: boolean;
 };
 
-export type LayoutComponentType = 'hero' | 'text' | 'cta' | 'image' | 'services';
+export type LayoutComponentType =
+  | 'hero'
+  | 'text'
+  | 'cta'
+  | 'image'
+  | 'services'
+  | 'testimonials';
 
 export type LayoutComponent = {
   id: string;
@@ -40,6 +46,12 @@ export type LayoutComponent = {
     serviceTwoBody?: string;
     serviceThreeTitle?: string;
     serviceThreeBody?: string;
+    testimonialOneName?: string;
+    testimonialOneQuote?: string;
+    testimonialTwoName?: string;
+    testimonialTwoQuote?: string;
+    testimonialThreeName?: string;
+    testimonialThreeQuote?: string;
   };
 };
 

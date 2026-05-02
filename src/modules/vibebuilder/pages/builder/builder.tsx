@@ -68,6 +68,24 @@ const createComponent = (type: LayoutComponentType): LayoutComponent => {
     };
   }
 
+  if (type === 'testimonials') {
+    return {
+      id,
+      type,
+      props: {
+        title: 'What People Say',
+        subtitle: 'Build trust by showing feedback from clients, customers, or users.',
+        testimonialOneName: 'Client One',
+        testimonialOneQuote:
+          'This website clearly presents the value and makes the business look professional.',
+        testimonialTwoName: 'Client Two',
+        testimonialTwoQuote: 'The layout is clean, useful, and easy for visitors to understand.',
+        testimonialThreeName: 'Client Three',
+        testimonialThreeQuote: 'A strong website section for building trust with future customers.',
+      },
+    };
+  }
+
   return {
     id,
     type,
@@ -424,6 +442,14 @@ export const VibeBuilderEditorPage = () => {
               >
                 + Services Block
               </button>
+
+              <button
+                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
+                onClick={() => addComponent('testimonials')}
+                type="button"
+              >
+                + Testimonials Block
+              </button>
             </div>
           </div>
 
@@ -734,6 +760,96 @@ export const VibeBuilderEditorPage = () => {
                       value={selectedComponent.props.serviceThreeBody ?? ''}
                       onChange={(event) =>
                         updateSelectedComponentProp('serviceThreeBody', event.target.value)
+                      }
+                    />
+                  </label>
+                </>
+              )}
+
+              {selectedComponent.type === 'testimonials' && (
+                <>
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Section Title</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.title ?? ''}
+                      onChange={(event) => updateSelectedComponentProp('title', event.target.value)}
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Section Subtitle</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.subtitle ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('subtitle', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 1 Name</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialOneName ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialOneName', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 1 Quote</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialOneQuote ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialOneQuote', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 2 Name</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialTwoName ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialTwoName', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 2 Quote</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialTwoQuote ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialTwoQuote', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 3 Name</span>
+                    <input
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialThreeName ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialThreeName', event.target.value)
+                      }
+                    />
+                  </label>
+
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium">Testimonial 3 Quote</span>
+                    <textarea
+                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                      value={selectedComponent.props.testimonialThreeQuote ?? ''}
+                      onChange={(event) =>
+                        updateSelectedComponentProp('testimonialThreeQuote', event.target.value)
                       }
                     />
                   </label>

@@ -117,6 +117,51 @@ const ServicesBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
   );
 };
 
+const TestimonialsBlock = ({ props }: { props?: LayoutComponent['props'] }) => {
+  const testimonials = [
+    {
+      name: props?.testimonialOneName || 'Client One',
+      quote:
+        props?.testimonialOneQuote ||
+        'This website clearly presents the value and makes the business look professional.',
+    },
+    {
+      name: props?.testimonialTwoName || 'Client Two',
+      quote:
+        props?.testimonialTwoQuote ||
+        'The layout is clean, useful, and easy for visitors to understand.',
+    },
+    {
+      name: props?.testimonialThreeName || 'Client Three',
+      quote:
+        props?.testimonialThreeQuote ||
+        'A strong website section for building trust with future customers.',
+    },
+  ];
+
+  return (
+    <section className="rounded-2xl border bg-slate-50 p-8 shadow-sm">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">
+          {props?.title || 'What People Say'}
+        </h2>
+        {props?.subtitle && (
+          <p className="mt-3 max-w-2xl text-muted-foreground">{props.subtitle}</p>
+        )}
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        {testimonials.map((testimonial) => (
+          <div key={testimonial.name} className="rounded-xl border bg-card p-5 shadow-sm">
+            <p className="text-sm leading-6 text-muted-foreground">“{testimonial.quote}”</p>
+            <p className="mt-4 font-semibold">{testimonial.name}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 const UnknownBlock = ({ component }: { component: LayoutComponent }) => {
   return (
     <section className="rounded-2xl border border-dashed bg-card p-6 text-muted-foreground">
@@ -157,6 +202,10 @@ export const LiveRenderer = ({ layoutJson }: LiveRendererProps) => {
 
         if (component.type === 'services') {
           return <ServicesBlock key={component.id} props={component.props} />;
+        }
+
+        if (component.type === 'testimonials') {
+          return <TestimonialsBlock key={component.id} props={component.props} />;
         }
 
         return <UnknownBlock key={component.id} component={component} />;
