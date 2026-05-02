@@ -32,6 +32,12 @@ const createSlug = (value: string): string => {
     .replace(/^-+|-+$/g, '');
 };
 
+const waitForDataGatewaySync = async () => {
+  await new Promise((resolve) => {
+    window.setTimeout(resolve, 700);
+  });
+};
+
 const createDefaultLayoutJson = (pageName: string): string => {
   return JSON.stringify({
     components: [
@@ -42,6 +48,7 @@ const createDefaultLayoutJson = (pageName: string): string => {
           title: pageName,
           subtitle: `This is the ${pageName} page built with VibeBuilder.`,
           buttonText: 'Get Started',
+          buttonLink: '#',
         },
       },
       {
@@ -219,6 +226,8 @@ export const VibeBuilderDashboardPage = () => {
         isPublished: true,
       });
 
+      await waitForDataGatewaySync();
+
       const projectResult = await getWebsiteProjects();
       const createdProject = (projectResult.getWebsiteProjects.items ?? [])
         .filter((project) => project.ownerUserId === currentUserId)
@@ -241,6 +250,8 @@ export const VibeBuilderDashboardPage = () => {
       setNewWebsiteName('');
       setNewWebsiteDescription('');
       setSuccessMessage(`${siteName} website created with a Home page.`);
+
+      await waitForDataGatewaySync();
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to create website:', error);
@@ -295,6 +306,8 @@ export const VibeBuilderDashboardPage = () => {
 
       setNewPageName('');
       setSuccessMessage(`${pageName} page created in ${selectedProject.siteName}.`);
+
+      await waitForDataGatewaySync();
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to create page:', error);
@@ -349,6 +362,8 @@ export const VibeBuilderDashboardPage = () => {
 
       setSuccessMessage(`${siteName} settings updated in SELISE Data Gateway.`);
       setIsEditingProjectSettings(false);
+
+      await waitForDataGatewaySync();
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to update website settings:', error);
@@ -456,6 +471,8 @@ export const VibeBuilderDashboardPage = () => {
 
       setSuccessMessage(`${pageName} page settings updated in SELISE Data Gateway.`);
       setEditingPageId('');
+
+      await waitForDataGatewaySync();
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to update page settings:', error);
@@ -484,6 +501,8 @@ export const VibeBuilderDashboardPage = () => {
       await deleteWebsitePage(page.ItemId);
 
       setSuccessMessage(`${page.pageName} page deleted from SELISE Data Gateway.`);
+
+      await waitForDataGatewaySync();
       await loadVibeBuilderData();
     } catch (error) {
       console.error('Failed to delete page:', error);
