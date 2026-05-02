@@ -1,5 +1,9 @@
 import { graphqlClient } from '@/lib/graphql-client';
-import { GET_WEBSITE_PAGES_QUERY, GET_WEBSITE_PROJECTS_QUERY } from '../graphql/queries';
+import {
+  GET_WEBSITE_PAGES_BY_PROJECT_QUERY,
+  GET_WEBSITE_PAGES_QUERY,
+  GET_WEBSITE_PROJECTS_QUERY,
+} from '../graphql/queries';
 import {
   DELETE_WEBSITE_PAGE_MUTATION,
   INSERT_WEBSITE_PAGE_MUTATION,
@@ -58,6 +62,19 @@ export const getWebsiteProjects = async (): Promise<WebsiteProjectResult> => {
 export const getWebsitePages = async (): Promise<WebsitePageResult> => {
   return graphqlClient.query<WebsitePageResult>({
     query: GET_WEBSITE_PAGES_QUERY,
+  });
+};
+
+export const getWebsitePagesByProject = async (
+  projectId: string,
+  ownerUserId: string
+): Promise<WebsitePageResult> => {
+  return graphqlClient.query<WebsitePageResult>({
+    query: GET_WEBSITE_PAGES_BY_PROJECT_QUERY,
+    variables: {
+      projectId,
+      ownerUserId,
+    },
   });
 };
 

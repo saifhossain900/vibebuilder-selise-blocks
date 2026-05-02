@@ -6,6 +6,7 @@ import {
   createWebsiteProject,
   deleteWebsitePage,
   getWebsitePages,
+  getWebsitePagesByProject,
   getWebsiteProjects,
   updateWebsitePage,
   updateWebsiteProject,
@@ -34,7 +35,7 @@ const createSlug = (value: string): string => {
 
 const waitForDataGatewaySync = async () => {
   await new Promise((resolve) => {
-    window.setTimeout(resolve, 700);
+    window.setTimeout(resolve, 900);
   });
 };
 
@@ -96,6 +97,37 @@ export const VibeBuilderDashboardPage = () => {
 
   const currentUserId = account?.itemId ?? '';
 
+  const syncProjectPagesIntoState = (projectId: string, freshProjectPages: WebsitePage[]) => {
+    setPages((currentPages) => {
+      const otherPages = currentPages.filter((page) => {
+        return page.projectId !== projectId;
+      });
+
+      return [...otherPages, ...freshProjectPages];
+    });
+  };
+
+  const fetchPagesForProject = async (projectId: string): Promise<WebsitePage[]> => {
+    if (!projectId || !currentUserId) {
+      return [];
+    }
+
+    const projectPageResult = await getWebsitePagesByProject(projectId, currentUserId);
+    const projectPages = projectPageResult.getWebsitePages.items ?? [];
+
+    return projectPages
+      .filter((page) => {
+        return page.projectId === projectId && page.ownerUserId === currentUserId;
+      })
+      .sort((firstPage, secondPage) => firstPage.displayOrder - secondPage.displayOrder);
+  };
+
+  const refreshPagesForProject = async (projectId: string): Promise<WebsitePage[]> => {
+    const freshProjectPages = await fetchPagesForProject(projectId);
+    syncProjectPagesIntoState(projectId, freshProjectPages);
+    return freshProjectPages;
+  };
+
   const loadVibeBuilderData = async () => {
     try {
       setIsLoading(true);
@@ -149,6 +181,17 @@ export const VibeBuilderDashboardPage = () => {
     loadVibeBuilderData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
+
+  useEffect(() => {
+    if (!currentUserId || !selectedProjectId) {
+      return;
+    }
+
+    refreshPagesForProject(selectedProjectId).catch((error) => {
+      console.warn('Could not refresh selected project pages directly:', error);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId, selectedProjectId]);
 
   const selectedProject = useMemo(() => {
     return projects.find((project) => project.ItemId === selectedProjectId);
@@ -245,14 +288,20 @@ export const VibeBuilderDashboardPage = () => {
         });
 
         setSelectedProjectId(createdProject.ItemId);
+
+        await waitForDataGatewaySync();
+        await refreshPagesForProject(createdProject.ItemId);
       }
 
       setNewWebsiteName('');
       setNewWebsiteDescription('');
       setSuccessMessage(`${siteName} website created with a Home page.`);
 
-      await waitForDataGatewaySync();
       await loadVibeBuilderData();
+
+      if (createdProject) {
+        await refreshPagesForProject(createdProject.ItemId);
+      }
     } catch (error) {
       console.error('Failed to create website:', error);
       setErrorMessage('Could not create website in SELISE Data Gateway.');
@@ -282,7 +331,15 @@ export const VibeBuilderDashboardPage = () => {
       return;
     }
 
-    const slugAlreadyExists = selectedProjectPages.some((page) => page.pageSlug === pageSlug);
+    let latestProjectPages = selectedProjectPages;
+
+    try {
+      latestProjectPages = await refreshPagesForProject(selectedProject.ItemId);
+    } catch (error) {
+      console.warn('Could not pre-check latest project pages:', error);
+    }
+
+    const slugAlreadyExists = latestProjectPages.some((page) => page.pageSlug === pageSlug);
 
     if (slugAlreadyExists) {
       setErrorMessage('This website already has a page with this slug. Use another page name.');
@@ -300,7 +357,7 @@ export const VibeBuilderDashboardPage = () => {
         pageName,
         pageSlug,
         layoutJson: createDefaultLayoutJson(pageName),
-        displayOrder: selectedProjectPages.length + 1,
+        displayOrder: latestProjectPages.length + 1,
         isHomePage: false,
       });
 
@@ -308,7 +365,10 @@ export const VibeBuilderDashboardPage = () => {
       setSuccessMessage(`${pageName} page created in ${selectedProject.siteName}.`);
 
       await waitForDataGatewaySync();
-      await loadVibeBuilderData();
+      await refreshPagesForProject(selectedProject.ItemId);
+
+      await waitForDataGatewaySync();
+      await refreshPagesForProject(selectedProject.ItemId);
     } catch (error) {
       console.error('Failed to create page:', error);
       setErrorMessage('Could not create page in SELISE Data Gateway.');
@@ -365,6 +425,7 @@ export const VibeBuilderDashboardPage = () => {
 
       await waitForDataGatewaySync();
       await loadVibeBuilderData();
+      await refreshPagesForProject(selectedProject.ItemId);
     } catch (error) {
       console.error('Failed to update website settings:', error);
       setErrorMessage('Could not update website settings in SELISE Data Gateway.');
@@ -430,7 +491,15 @@ export const VibeBuilderDashboardPage = () => {
       return;
     }
 
-    const slugAlreadyExists = selectedProjectPages.some((page) => {
+    let latestProjectPages = selectedProjectPages;
+
+    try {
+      latestProjectPages = await refreshPagesForProject(selectedProject.ItemId);
+    } catch (error) {
+      console.warn('Could not pre-check latest project pages before saving page settings:', error);
+    }
+
+    const slugAlreadyExists = latestProjectPages.some((page) => {
       return page.ItemId !== editingPage.ItemId && page.pageSlug === pageSlug;
     });
 
@@ -450,7 +519,7 @@ export const VibeBuilderDashboardPage = () => {
       setSuccessMessage('');
 
       if (settingsPageIsHome) {
-        const oldHomePages = selectedProjectPages.filter((page) => {
+        const oldHomePages = latestProjectPages.filter((page) => {
           return page.ItemId !== editingPage.ItemId && page.isHomePage;
         });
 
@@ -473,7 +542,7 @@ export const VibeBuilderDashboardPage = () => {
       setEditingPageId('');
 
       await waitForDataGatewaySync();
-      await loadVibeBuilderData();
+      await refreshPagesForProject(selectedProject.ItemId);
     } catch (error) {
       console.error('Failed to update page settings:', error);
       setErrorMessage('Could not update page settings in SELISE Data Gateway.');
@@ -483,6 +552,11 @@ export const VibeBuilderDashboardPage = () => {
   };
 
   const handleDeletePage = async (page: WebsitePage) => {
+    if (!selectedProject) {
+      setErrorMessage('Select a website before deleting a page.');
+      return;
+    }
+
     if (page.ownerUserId !== currentUserId) {
       setErrorMessage('You cannot delete a page that does not belong to your workspace.');
       return;
@@ -503,7 +577,10 @@ export const VibeBuilderDashboardPage = () => {
       setSuccessMessage(`${page.pageName} page deleted from SELISE Data Gateway.`);
 
       await waitForDataGatewaySync();
-      await loadVibeBuilderData();
+      await refreshPagesForProject(selectedProject.ItemId);
+
+      await waitForDataGatewaySync();
+      await refreshPagesForProject(selectedProject.ItemId);
     } catch (error) {
       console.error('Failed to delete page:', error);
       setErrorMessage('Could not delete page from SELISE Data Gateway.');
