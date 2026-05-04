@@ -35,14 +35,11 @@ export const GET_WEBSITE_PAGES_QUERY = `
 `;
 
 export const GET_WEBSITE_PAGES_BY_PROJECT_QUERY = `
-  query GetWebsitePagesByProject($projectId: String!, $ownerUserId: String!) {
+  query GetWebsitePagesByProject($projectId: String!) {
     getWebsitePages(
       where: {
         projectId: {
           eq: $projectId
-        }
-        ownerUserId: {
-          eq: $ownerUserId
         }
       }
     ) {

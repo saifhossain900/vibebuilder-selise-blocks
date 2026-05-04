@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { DragEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { LiveRenderer } from '../../components/live-renderer';
-import { getWebsitePages, updateWebsitePageLayout } from '../../services/vibebuilder.service';
+import { getWebsitePagesByProject, updateWebsitePageLayout } from '../../services/vibebuilder.service';
 import {
   LayoutComponent,
   LayoutComponentType,
@@ -129,18 +129,30 @@ export const VibeBuilderEditorPage = () => {
 
   useEffect(() => {
     const loadPages = async () => {
+      if (!projectId || !pageId) {
+        setErrorMessage('Missing project or page information in the builder URL.');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setErrorMessage('');
         setSuccessMessage('');
 
-        const pageResult = await getWebsitePages();
+        const pageResult = await getWebsitePagesByProject(projectId);
         const loadedPages = pageResult.getWebsitePages.items ?? [];
-        const activePage = loadedPages.find((page) => page.ItemId === pageId);
+        const selectedPage = loadedPages.find((page) => page.ItemId === pageId);
 
         setPages(loadedPages);
-        setComponents(activePage ? parseLayout(activePage.layoutJson).components : []);
+        setComponents(selectedPage ? parseLayout(selectedPage.layoutJson).components : []);
         setSelectedComponentId('');
+
+        if (!selectedPage) {
+          setErrorMessage(
+            'This page could not be loaded for this website. Go back to the dashboard, refresh, and open Builder from the page card again.'
+          );
+        }
       } catch (error) {
         console.error('Failed to load VibeBuilder editor data:', error);
         setErrorMessage('Could not load page data from SELISE Data Gateway.');
@@ -150,13 +162,13 @@ export const VibeBuilderEditorPage = () => {
     };
 
     loadPages();
-  }, [pageId]);
+  }, [pageId, projectId]);
 
   const sortedPages = useMemo(() => {
-    return [...pages]
-      .filter((page) => page.projectId === projectId)
-      .sort((firstPage, secondPage) => firstPage.displayOrder - secondPage.displayOrder);
-  }, [pages, projectId]);
+    return [...pages].sort(
+      (firstPage, secondPage) => firstPage.displayOrder - secondPage.displayOrder
+    );
+  }, [pages]);
 
   const activePage = sortedPages.find((page) => page.ItemId === pageId);
 
@@ -327,9 +339,17 @@ export const VibeBuilderEditorPage = () => {
     return (
       <div className="space-y-4 p-6">
         <h1 className="text-2xl font-bold">Page not found</h1>
-        <p className="text-muted-foreground">
-          The selected page could not be found in SELISE Data Gateway.
-        </p>
+
+        {errorMessage ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+            {errorMessage}
+          </div>
+        ) : (
+          <p className="text-muted-foreground">
+            The selected page could not be found in SELISE Data Gateway.
+          </p>
+        )}
+
         <Link className="text-blue-600 underline" to="/vibebuilder">
           Back to VibeBuilder dashboard
         </Link>

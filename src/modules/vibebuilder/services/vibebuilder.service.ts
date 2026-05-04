@@ -66,14 +66,12 @@ export const getWebsitePages = async (): Promise<WebsitePageResult> => {
 };
 
 export const getWebsitePagesByProject = async (
-  projectId: string,
-  ownerUserId: string
+  projectId: string
 ): Promise<WebsitePageResult> => {
   return graphqlClient.query<WebsitePageResult>({
     query: GET_WEBSITE_PAGES_BY_PROJECT_QUERY,
     variables: {
       projectId,
-      ownerUserId,
     },
   });
 };
