@@ -221,6 +221,38 @@ export const VibeBuilderEditorPage = () => {
     setSuccessMessage('');
   };
 
+  const duplicateSelectedComponent = () => {
+    if (!selectedComponent) {
+      return;
+    }
+
+    const duplicatedComponent: LayoutComponent = {
+      ...selectedComponent,
+      id: `${selectedComponent.type}_${Date.now()}`,
+      props: {
+        ...selectedComponent.props,
+      },
+    };
+
+    setComponents((currentComponents) => {
+      const selectedIndex = currentComponents.findIndex((component) => {
+        return component.id === selectedComponent.id;
+      });
+
+      if (selectedIndex === -1) {
+        return [...currentComponents, duplicatedComponent];
+      }
+
+      const updatedComponents = [...currentComponents];
+      updatedComponents.splice(selectedIndex + 1, 0, duplicatedComponent);
+
+      return updatedComponents;
+    });
+
+    setSelectedComponentId(duplicatedComponent.id);
+    setSuccessMessage('');
+  };
+
   const moveComponent = (componentId: string, direction: 'up' | 'down') => {
     setComponents((currentComponents) => {
       const currentIndex = currentComponents.findIndex((component) => component.id === componentId);
@@ -953,6 +985,14 @@ export const VibeBuilderEditorPage = () => {
                     </label>
                   </>
                 )}
+
+                <button
+                  className="w-full rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-lg"
+                  onClick={duplicateSelectedComponent}
+                  type="button"
+                >
+                  Duplicate Selected Block
+                </button>
 
                 <button
                   className="w-full rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-lg"
