@@ -112,7 +112,7 @@ export const VibeBuilderDashboardPage = () => {
       return [];
     }
 
-    const projectPageResult = await getWebsitePagesByProject(projectId, currentUserId);
+    const projectPageResult = await getWebsitePagesByProject(projectId);
     const projectPages = projectPageResult.getWebsitePages.items ?? [];
 
     return projectPages
@@ -590,429 +590,538 @@ export const VibeBuilderDashboardPage = () => {
   };
 
   if (isAccountLoading) {
-    return <div className="p-6">Loading SELISE account...</div>;
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe_0,#f8fafc_32%,#eef2ff_62%,#f8fafc_100%)] px-6 py-10">
+        <div className="mx-auto max-w-7xl rounded-[2rem] border border-white/80 bg-white/90 p-8 text-slate-700 shadow-xl shadow-slate-200/80 backdrop-blur">
+          Loading SELISE account...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <p className="text-sm font-semibold text-blue-600">SELISE Blocks Project</p>
-        <h1 className="text-3xl font-bold tracking-tight">VibeBuilder</h1>
-        <p className="mt-2 text-muted-foreground">
-          Drag-and-drop multi-page website builder powered by SELISE IAM, Data Gateway,
-          and Media Block.
-        </p>
-        {currentUserId && (
-          <p className="mt-2 text-xs text-muted-foreground">Workspace owner: {currentUserId}</p>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe_0,#f8fafc_32%,#eef2ff_62%,#f8fafc_100%)]">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -left-24 top-0 h-80 w-80 rounded-full bg-blue-400/30 blur-3xl" />
+        <div className="absolute right-0 top-24 h-96 w-96 rounded-full bg-indigo-400/25 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.04)_1px,transparent_1px)] bg-[size:42px_42px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 p-6 text-white shadow-2xl shadow-blue-950/20 md:p-8">
+          <div className="absolute inset-0 opacity-80">
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-500/30 blur-3xl" />
+            <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(59,130,246,0.20),transparent_45%,rgba(14,165,233,0.12))]" />
+          </div>
+
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-blue-300/30 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-100 shadow-sm">
+                SELISE Blocks Website Builder
+              </div>
+
+              <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
+                VibeBuilder
+              </h1>
+
+              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
+                Create multi-page websites, generate editable layouts, save layoutJson, and publish
+                live pages using SELISE IAM and SELISE Data Gateway.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-200">
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  SELISE IAM
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  Data Gateway
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  layoutJson
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  Public Live Sites
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-slate-300 shadow-xl backdrop-blur">
+              <p className="font-semibold text-white">Workspace</p>
+              <p className="mt-2 break-all text-xs leading-5">
+                {currentUserId || 'SELISE account not detected'}
+              </p>
+              <p className="mt-3 text-xs text-slate-400">
+                All projects shown here belong to your logged-in SELISE IAM workspace.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-100">
+            <p className="text-sm font-semibold text-slate-500">Website Projects</p>
+            <p className="mt-3 text-4xl font-bold text-slate-950">{projects.length}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Websites owned by your SELISE IAM account.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-100">
+            <p className="text-sm font-semibold text-slate-500">Total Pages</p>
+            <p className="mt-3 text-4xl font-bold text-slate-950">{pages.length}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Pages stored as WebsitePage records.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-100">
+            <p className="text-sm font-semibold text-slate-500">Layout Blocks</p>
+            <p className="mt-3 text-4xl font-bold text-slate-950">{totalLayoutComponents}</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Serialized components saved in layoutJson.
+            </p>
+          </div>
+        </div>
+
+        {isLoading && (
+          <div className="rounded-3xl border border-blue-200 bg-blue-50/90 p-5 text-blue-700 shadow-xl shadow-blue-100 backdrop-blur">
+            Loading your VibeBuilder workspace from SELISE Data Gateway...
+          </div>
         )}
-      </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="font-semibold">My Website Projects</h2>
-          <p className="mt-2 text-3xl font-bold">{projects.length}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            All websites owned by your SELISE IAM account.
-          </p>
-        </div>
+        {errorMessage && (
+          <div className="rounded-3xl border border-red-200 bg-red-50/90 p-5 text-red-700 shadow-xl shadow-red-100 backdrop-blur">
+            {errorMessage}
+          </div>
+        )}
 
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="font-semibold">My Pages</h2>
-          <p className="mt-2 text-3xl font-bold">{pages.length}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Total pages across all your websites.
-          </p>
-        </div>
+        {successMessage && (
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50/90 p-5 text-emerald-700 shadow-xl shadow-emerald-100 backdrop-blur">
+            {successMessage}
+          </div>
+        )}
 
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="font-semibold">Layout JSON</h2>
-          <p className="mt-2 text-3xl font-bold">{totalLayoutComponents}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Serialized components stored in SELISE Data Gateway.
-          </p>
-        </div>
-      </div>
+        {!isLoading && currentUserId && (
+          <section className="rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur md:p-6">
+            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+                  Create Website
+                </p>
+                <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
+                  Start a new website project
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                  Each website becomes a WebsiteProject record and receives an automatic Home page
+                  in SELISE Data Gateway.
+                </p>
+              </div>
+            </div>
 
-      {isLoading && (
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          Loading your VibeBuilder workspace from SELISE Data Gateway...
-        </div>
-      )}
+            <form className="mt-5 space-y-3" onSubmit={handleCreateWebsite}>
+              <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+                <input
+                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm shadow-inner outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                  placeholder="Website name, e.g. Agency Site"
+                  value={newWebsiteName}
+                  onChange={(event) => setNewWebsiteName(event.target.value)}
+                />
 
-      {errorMessage && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-700">
-          {errorMessage}
-        </div>
-      )}
+                <button
+                  className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={isCreatingWebsite}
+                  type="submit"
+                >
+                  {isCreatingWebsite ? 'Creating...' : 'Create Website'}
+                </button>
+              </div>
 
-      {successMessage && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-5 text-green-700">
-          {successMessage}
-        </div>
-      )}
+              <textarea
+                className="min-h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm shadow-inner outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                placeholder="Website description. You can write a longer description here."
+                value={newWebsiteDescription}
+                onChange={(event) => setNewWebsiteDescription(event.target.value)}
+              />
+            </form>
+          </section>
+        )}
 
-      {!isLoading && currentUserId && (
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">Create another website</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Each website becomes a WebsiteProject record and receives an automatic Home page.
-          </p>
+        {!isLoading && projects.length > 0 && (
+          <section className="rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur md:p-6">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+                  Workspace Sites
+                </p>
+                <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
+                  My Websites
+                </h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  Select a website to manage its pages and public route.
+                </p>
+              </div>
+            </div>
 
-          <form className="mt-5 space-y-3" onSubmit={handleCreateWebsite}>
-            <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {projects.map((project) => {
+                const projectPageCount = pages.filter(
+                  (page) => page.projectId === project.ItemId
+                ).length;
+                const isSelected = project.ItemId === selectedProjectId;
+
+                return (
+                  <button
+                    key={project.ItemId}
+                    className={`group rounded-3xl border p-5 text-left transition ${
+                      isSelected
+                        ? 'border-blue-400 bg-blue-50 shadow-xl shadow-blue-100'
+                        : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100'
+                    }`}
+                    onClick={() => {
+                      setSelectedProjectId(project.ItemId);
+                      setEditingPageId('');
+                      setErrorMessage('');
+                    }}
+                    type="button"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <h3 className="truncate text-lg font-bold text-slate-950">
+                          {project.siteName}
+                        </h3>
+                        <p className="mt-1 truncate text-sm text-slate-500">/{project.siteSlug}</p>
+                      </div>
+
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
+                          project.isPublished
+                            ? 'bg-emerald-100 text-emerald-700'
+                            : 'bg-amber-100 text-amber-700'
+                        }`}
+                      >
+                        {project.isPublished ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
+
+                    <p className="mt-4 line-clamp-2 min-h-10 text-sm leading-5 text-slate-500">
+                      {project.description || 'No website description added yet.'}
+                    </p>
+
+                    <div className="mt-5 flex items-center justify-between border-t border-slate-200 pt-4">
+                      <p className="text-sm text-slate-600">
+                        Pages: <span className="font-bold text-slate-950">{projectPageCount}</span>
+                      </p>
+                      <span className="text-sm font-semibold text-blue-600 opacity-80 transition group-hover:translate-x-0.5 group-hover:opacity-100">
+                        Manage →
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {!isLoading && selectedProject && (
+          <section className="rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur md:p-6">
+            <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+                  Selected Website
+                </p>
+                <h2 className="mt-1 text-3xl font-bold tracking-tight text-slate-950">
+                  {selectedProject.siteName}
+                </h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+                  {selectedProject.description || 'No description added.'}
+                </p>
+                <p className="mt-2 text-sm font-medium text-slate-500">/{selectedProject.siteSlug}</p>
+
+                {selectedProject.isPublished ? (
+                  <Link
+                    className="mt-4 inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-xl"
+                    to={`/site/${selectedProject.siteSlug}/${
+                      selectedProjectHomePage?.pageSlug ?? 'home'
+                    }`}
+                  >
+                    View public website
+                  </Link>
+                ) : (
+                  <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                    This website is currently draft. Public route will show website not found.
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col items-start gap-2 md:items-end">
+                <div
+                  className={`rounded-full px-4 py-2 text-sm font-semibold shadow-sm ${
+                    selectedProject.isPublished
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-amber-100 text-amber-700'
+                  }`}
+                >
+                  {selectedProject.isPublished ? 'Published' : 'Draft'}
+                </div>
+
+                <button
+                  className="rounded-2xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg"
+                  onClick={() => setIsEditingProjectSettings((current) => !current)}
+                  type="button"
+                >
+                  {isEditingProjectSettings ? 'Close Settings' : 'Edit Website Settings'}
+                </button>
+              </div>
+            </div>
+
+            {isEditingProjectSettings && (
+              <form
+                className="mt-6 space-y-4 rounded-3xl border border-slate-200 bg-slate-50/90 p-5 shadow-inner"
+                onSubmit={handleSaveProjectSettings}
+              >
+                <div>
+                  <h3 className="text-lg font-bold text-slate-950">Website Settings</h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Update the website name, description, slug, and publish status.
+                  </p>
+                </div>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Website Name</span>
+                  <input
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    value={settingsSiteName}
+                    onChange={(event) => setSettingsSiteName(event.target.value)}
+                  />
+                  <span className="block text-xs text-slate-500">
+                    New public slug preview: /{createSlug(settingsSiteName) || 'website-slug'}
+                  </span>
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-semibold text-slate-700">Website Description</span>
+                  <textarea
+                    className="min-h-32 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    value={settingsDescription}
+                    onChange={(event) => setSettingsDescription(event.target.value)}
+                  />
+                </label>
+
+                <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm shadow-sm">
+                  <input
+                    checked={settingsIsPublished}
+                    className="mt-1"
+                    onChange={(event) => setSettingsIsPublished(event.target.checked)}
+                    type="checkbox"
+                  />
+                  <span>
+                    <span className="font-semibold text-slate-800">Published</span>
+                    <span className="mt-1 block text-xs leading-5 text-slate-500">
+                      Published websites are visible through /site/slug/page. Draft websites stay
+                      hidden from the public route.
+                    </span>
+                  </span>
+                </label>
+
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl disabled:opacity-60"
+                    disabled={isSavingProjectSettings}
+                    type="submit"
+                  >
+                    {isSavingProjectSettings ? 'Saving...' : 'Save Settings'}
+                  </button>
+
+                  <button
+                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg"
+                    onClick={handleCancelProjectSettings}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <form
+              className="mt-6 flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50/90 p-4 shadow-inner md:flex-row"
+              onSubmit={handleCreatePage}
+            >
               <input
-                className="rounded-lg border bg-background px-3 py-2 text-sm"
-                placeholder="Website name, e.g. Agency Site"
-                value={newWebsiteName}
-                onChange={(event) => setNewWebsiteName(event.target.value)}
+                className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                placeholder="New page name, e.g. Portfolio"
+                value={newPageName}
+                onChange={(event) => setNewPageName(event.target.value)}
               />
 
               <button
-                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-                disabled={isCreatingWebsite}
+                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isCreatingPage}
                 type="submit"
               >
-                {isCreatingWebsite ? 'Creating...' : 'Create Website'}
+                {isCreatingPage ? 'Creating...' : 'Create Page'}
               </button>
-            </div>
+            </form>
 
-            <textarea
-              className="min-h-28 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              placeholder="Website description. You can write a longer description here."
-              value={newWebsiteDescription}
-              onChange={(event) => setNewWebsiteDescription(event.target.value)}
-            />
-          </form>
-        </div>
-      )}
-
-      {!isLoading && projects.length > 0 && (
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">My Websites</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Select a website to manage its pages.
-          </p>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => {
-              const projectPageCount = pages.filter(
-                (page) => page.projectId === project.ItemId
-              ).length;
-              const isSelected = project.ItemId === selectedProjectId;
-
-              return (
-                <button
-                  key={project.ItemId}
-                  className={`rounded-xl border p-4 text-left transition ${
-                    isSelected
-                      ? 'border-blue-400 bg-blue-50'
-                      : 'bg-background hover:border-blue-200'
-                  }`}
-                  onClick={() => {
-                    setSelectedProjectId(project.ItemId);
-                    setEditingPageId('');
-                    setErrorMessage('');
-                  }}
-                  type="button"
+            <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {selectedProjectPages.map((page) => (
+                <div
+                  key={page.ItemId}
+                  className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-semibold">{project.siteName}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">/{project.siteSlug}</p>
+                    <div className="min-w-0">
+                      <h3 className="truncate font-bold text-slate-950">{page.pageName}</h3>
+                      <p className="mt-1 truncate text-sm text-slate-500">/{page.pageSlug}</p>
                     </div>
 
-                    <span className="rounded-full border bg-card px-2 py-1 text-xs">
-                      {project.isPublished ? 'Published' : 'Draft'}
-                    </span>
+                    {page.isHomePage && (
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 shadow-sm">
+                        Home
+                      </span>
+                    )}
                   </div>
 
-                  <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">
-                    {project.description}
-                  </p>
-
-                  <p className="mt-3 text-sm">
-                    Pages: <span className="font-semibold">{projectPageCount}</span>
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {!isLoading && selectedProject && (
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-sm font-semibold text-blue-600">Selected Website</p>
-              <h2 className="text-xl font-semibold">{selectedProject.siteName}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{selectedProject.description}</p>
-              <p className="mt-1 text-sm text-muted-foreground">/{selectedProject.siteSlug}</p>
-
-              {selectedProject.isPublished ? (
-                <Link
-                  className="mt-3 inline-flex text-sm font-medium text-blue-600 underline"
-                  to={`/site/${selectedProject.siteSlug}/${
-                    selectedProjectHomePage?.pageSlug ?? 'home'
-                  }`}
-                >
-                  View public website
-                </Link>
-              ) : (
-                <p className="mt-3 text-sm text-amber-600">
-                  This website is currently draft. Public route will show website not found.
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col items-start gap-2 md:items-end">
-              <div className="rounded-full border px-3 py-1 text-sm">
-                {selectedProject.isPublished ? 'Published' : 'Draft'}
-              </div>
-
-              <button
-                className="rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
-                onClick={() => setIsEditingProjectSettings((current) => !current)}
-                type="button"
-              >
-                {isEditingProjectSettings ? 'Close Settings' : 'Edit Website Settings'}
-              </button>
-            </div>
-          </div>
-
-          {isEditingProjectSettings && (
-            <form
-              className="mt-5 space-y-4 rounded-xl border bg-background p-4"
-              onSubmit={handleSaveProjectSettings}
-            >
-              <div>
-                <h3 className="font-semibold">Website Settings</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Update the website name, description, slug, and publish status.
-                </p>
-              </div>
-
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Website Name</span>
-                <input
-                  className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
-                  value={settingsSiteName}
-                  onChange={(event) => setSettingsSiteName(event.target.value)}
-                />
-                <span className="block text-xs text-muted-foreground">
-                  New public slug preview: /{createSlug(settingsSiteName) || 'website-slug'}
-                </span>
-              </label>
-
-              <label className="block space-y-2">
-                <span className="text-sm font-medium">Website Description</span>
-                <textarea
-                  className="min-h-32 w-full rounded-lg border bg-card px-3 py-2 text-sm"
-                  value={settingsDescription}
-                  onChange={(event) => setSettingsDescription(event.target.value)}
-                />
-              </label>
-
-              <label className="flex items-center gap-3 rounded-lg border bg-card p-3 text-sm">
-                <input
-                  checked={settingsIsPublished}
-                  onChange={(event) => setSettingsIsPublished(event.target.checked)}
-                  type="checkbox"
-                />
-                <span>
-                  Published
-                  <span className="block text-xs text-muted-foreground">
-                    Published websites are visible through /site/slug/page. Draft websites stay
-                    hidden from the public route.
-                  </span>
-                </span>
-              </label>
-
-              <div className="flex flex-wrap gap-2">
-                <button
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-                  disabled={isSavingProjectSettings}
-                  type="submit"
-                >
-                  {isSavingProjectSettings ? 'Saving...' : 'Save Settings'}
-                </button>
-
-                <button
-                  className="rounded-lg border px-4 py-2 text-sm font-medium"
-                  onClick={handleCancelProjectSettings}
-                  type="button"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
-
-          <form
-            className="mt-5 flex flex-col gap-3 rounded-xl border bg-background p-4 md:flex-row"
-            onSubmit={handleCreatePage}
-          >
-            <input
-              className="flex-1 rounded-lg border bg-card px-3 py-2 text-sm"
-              placeholder="New page name, e.g. Portfolio"
-              value={newPageName}
-              onChange={(event) => setNewPageName(event.target.value)}
-            />
-
-            <button
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-              disabled={isCreatingPage}
-              type="submit"
-            >
-              {isCreatingPage ? 'Creating...' : 'Create Page'}
-            </button>
-          </form>
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {selectedProjectPages.map((page) => (
-              <div key={page.ItemId} className="rounded-lg border p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="font-semibold">{page.pageName}</h3>
-                  {page.isHomePage && (
-                    <span className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-700">
-                      Home
+                  <p className="mt-4 text-sm text-slate-600">
+                    Components:{' '}
+                    <span className="font-bold text-slate-950">
+                      {getComponentCount(page.layoutJson)}
                     </span>
+                  </p>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Link
+                      className="inline-flex rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg"
+                      to={`/vibebuilder/builder/${page.projectId}/${page.ItemId}`}
+                    >
+                      Open Builder
+                    </Link>
+
+                    <Link
+                      className="inline-flex rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg"
+                      to={`/site/${selectedProject.siteSlug}/${page.pageSlug}`}
+                    >
+                      View Page
+                    </Link>
+
+                    <button
+                      className="inline-flex rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg"
+                      onClick={() => startPageSettings(page)}
+                      type="button"
+                    >
+                      Settings
+                    </button>
+
+                    <button
+                      className="inline-flex rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={page.isHomePage || deletingPageId === page.ItemId}
+                      onClick={() => handleDeletePage(page)}
+                      type="button"
+                    >
+                      {deletingPageId === page.ItemId ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
+
+                  {editingPageId === page.ItemId && (
+                    <form
+                      className="mt-4 space-y-3 rounded-2xl border border-slate-200 bg-slate-50/90 p-4 shadow-inner"
+                      onSubmit={handleSavePageSettings}
+                    >
+                      <div>
+                        <h4 className="font-bold text-slate-950">Page Settings</h4>
+                        <p className="mt-1 text-xs leading-5 text-slate-500">
+                          Rename this page, update its slug, or set it as the Home page.
+                        </p>
+                      </div>
+
+                      <label className="block space-y-1">
+                        <span className="text-xs font-semibold text-slate-700">Page Name</span>
+                        <input
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:bg-white"
+                          value={settingsPageName}
+                          onChange={(event) => {
+                            setSettingsPageName(event.target.value);
+                            setSettingsPageSlug(createSlug(event.target.value));
+                          }}
+                        />
+                      </label>
+
+                      <label className="block space-y-1">
+                        <span className="text-xs font-semibold text-slate-700">Page Slug</span>
+                        <input
+                          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-blue-400 focus:bg-white"
+                          value={settingsPageSlug}
+                          onChange={(event) => setSettingsPageSlug(createSlug(event.target.value))}
+                        />
+                        <span className="block text-xs leading-5 text-slate-500">
+                          Public page URL: /site/{selectedProject.siteSlug}/
+                          {createSlug(settingsPageSlug) || 'page-slug'}
+                        </span>
+                      </label>
+
+                      <label className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm shadow-sm">
+                        <input
+                          checked={settingsPageIsHome}
+                          className="mt-1"
+                          onChange={(event) => setSettingsPageIsHome(event.target.checked)}
+                          type="checkbox"
+                        />
+                        <span>
+                          <span className="font-semibold text-slate-800">Set as Home page</span>
+                          <span className="mt-1 block text-xs leading-5 text-slate-500">
+                            Only one page should be Home inside each website.
+                          </span>
+                        </span>
+                      </label>
+
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          className="rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg disabled:opacity-60"
+                          disabled={isSavingPageSettings}
+                          type="submit"
+                        >
+                          {isSavingPageSettings ? 'Saving...' : 'Save Page'}
+                        </button>
+
+                        <button
+                          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg"
+                          onClick={cancelPageSettings}
+                          type="button"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
                   )}
                 </div>
+              ))}
 
-                <p className="mt-2 text-sm text-muted-foreground">/{page.pageSlug}</p>
-
-                <p className="mt-3 text-sm">
-                  Components:{' '}
-                  <span className="font-semibold">{getComponentCount(page.layoutJson)}</span>
-                </p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Link
-                    className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
-                    to={`/vibebuilder/builder/${page.projectId}/${page.ItemId}`}
-                  >
-                    Open Builder
-                  </Link>
-
-                  <Link
-                    className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                    to={`/site/${selectedProject.siteSlug}/${page.pageSlug}`}
-                  >
-                    View Page
-                  </Link>
-
-                  <button
-                    className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
-                    onClick={() => startPageSettings(page)}
-                    type="button"
-                  >
-                    Page Settings
-                  </button>
-
-                  <button
-                    className="inline-flex rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={page.isHomePage || deletingPageId === page.ItemId}
-                    onClick={() => handleDeletePage(page)}
-                    type="button"
-                  >
-                    {deletingPageId === page.ItemId ? 'Deleting...' : 'Delete'}
-                  </button>
+              {selectedProjectPages.length === 0 && (
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white/80 p-5 text-sm text-slate-500 shadow-sm backdrop-blur">
+                  No pages found for this website yet.
                 </div>
+              )}
+            </div>
+          </section>
+        )}
 
-                {editingPageId === page.ItemId && (
-                  <form
-                    className="mt-4 space-y-3 rounded-lg border bg-background p-3"
-                    onSubmit={handleSavePageSettings}
-                  >
-                    <div>
-                      <h4 className="font-semibold">Page Settings</h4>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Rename this page, update its slug, or set it as the Home page.
-                      </p>
-                    </div>
-
-                    <label className="block space-y-1">
-                      <span className="text-xs font-medium">Page Name</span>
-                      <input
-                        className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
-                        value={settingsPageName}
-                        onChange={(event) => {
-                          setSettingsPageName(event.target.value);
-                          setSettingsPageSlug(createSlug(event.target.value));
-                        }}
-                      />
-                    </label>
-
-                    <label className="block space-y-1">
-                      <span className="text-xs font-medium">Page Slug</span>
-                      <input
-                        className="w-full rounded-lg border bg-card px-3 py-2 text-sm"
-                        value={settingsPageSlug}
-                        onChange={(event) => setSettingsPageSlug(createSlug(event.target.value))}
-                      />
-                      <span className="block text-xs text-muted-foreground">
-                        Public page URL: /site/{selectedProject.siteSlug}/
-                        {createSlug(settingsPageSlug) || 'page-slug'}
-                      </span>
-                    </label>
-
-                    <label className="flex items-center gap-3 rounded-lg border bg-card p-3 text-sm">
-                      <input
-                        checked={settingsPageIsHome}
-                        onChange={(event) => setSettingsPageIsHome(event.target.checked)}
-                        type="checkbox"
-                      />
-                      <span>
-                        Set as Home page
-                        <span className="block text-xs text-muted-foreground">
-                          Only one page should be Home inside each website.
-                        </span>
-                      </span>
-                    </label>
-
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-                        disabled={isSavingPageSettings}
-                        type="submit"
-                      >
-                        {isSavingPageSettings ? 'Saving...' : 'Save Page'}
-                      </button>
-
-                      <button
-                        className="rounded-lg border px-3 py-2 text-sm font-medium"
-                        onClick={cancelPageSettings}
-                        type="button"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-            ))}
-
-            {selectedProjectPages.length === 0 && (
-              <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-                No pages found for this website yet.
-              </div>
-            )}
+        {!isLoading && currentUserId && projects.length === 0 && (
+          <div className="rounded-3xl border border-white/80 bg-white/90 p-8 text-center text-slate-600 shadow-xl shadow-slate-200/80 backdrop-blur">
+            <h2 className="text-xl font-bold text-slate-950">Create your first website</h2>
+            <p className="mt-2 text-sm text-slate-500">
+              You do not have a website yet. Use the create website section above to start.
+            </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {!isLoading && currentUserId && projects.length === 0 && (
-        <div className="rounded-xl border border-dashed bg-card p-5 text-muted-foreground">
-          You do not have a website yet. Create your first website above.
-        </div>
-      )}
-
-      {!currentUserId && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-700">
-          Could not detect your SELISE account. Please log in again.
-        </div>
-      )}
+        {!currentUserId && (
+          <div className="rounded-3xl border border-red-200 bg-red-50/90 p-5 text-red-700 shadow-xl shadow-red-100 backdrop-blur">
+            Could not detect your SELISE account. Please log in again.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
