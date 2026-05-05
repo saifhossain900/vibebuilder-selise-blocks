@@ -13,6 +13,40 @@ import {
 } from '../../services/vibebuilder.service';
 import { WebsitePage, WebsiteProject } from '../../types/vibebuilder.types';
 
+type PageTemplateId = 'default' | 'business' | 'portfolio' | 'services' | 'contact';
+
+const pageTemplateOptions: {
+  id: PageTemplateId;
+  label: string;
+  description: string;
+}[] = [
+  {
+    id: 'default',
+    label: 'Default',
+    description: 'Hero + Text',
+  },
+  {
+    id: 'business',
+    label: 'Business Landing',
+    description: 'Hero + Services + Testimonials + CTA',
+  },
+  {
+    id: 'portfolio',
+    label: 'Portfolio',
+    description: 'Hero + Image + Text + CTA',
+  },
+  {
+    id: 'services',
+    label: 'Services Page',
+    description: 'Hero + Services + CTA',
+  },
+  {
+    id: 'contact',
+    label: 'Contact Page',
+    description: 'Hero + Text + CTA',
+  },
+];
+
 const getComponentCount = (layoutJson: string): number => {
   try {
     const parsedLayout = JSON.parse(layoutJson) as {
@@ -39,29 +73,123 @@ const waitForDataGatewaySync = async () => {
   });
 };
 
-const createDefaultLayoutJson = (pageName: string): string => {
+const createTemplateLayoutJson = (pageName: string, templateId: PageTemplateId): string => {
+  const createdAt = Date.now();
+
+  const heroBlock = {
+    id: `hero_${createdAt}`,
+    type: 'hero',
+    props: {
+      title: pageName,
+      subtitle: `This is the ${pageName} page built with VibeBuilder.`,
+      buttonText: 'Get Started',
+      buttonLink: '#',
+    },
+  };
+
+  const textBlock = {
+    id: `text_${createdAt}`,
+    type: 'text',
+    props: {
+      heading: `About ${pageName}`,
+      body: 'Edit this content in the VibeBuilder editor and save it to SELISE Data Gateway.',
+    },
+  };
+
+  const servicesBlock = {
+    id: `services_${createdAt}`,
+    type: 'services',
+    props: {
+      title: 'Our Services',
+      subtitle: 'Highlight the main services or features offered by this website.',
+      serviceOneTitle: 'Strategy',
+      serviceOneBody: 'Plan the right direction with clear goals and useful decisions.',
+      serviceTwoTitle: 'Design',
+      serviceTwoBody: 'Create clean, modern, and user-friendly digital experiences.',
+      serviceThreeTitle: 'Delivery',
+      serviceThreeBody: 'Build and launch reliable solutions that are easy to maintain.',
+    },
+  };
+
+  const imageBlock = {
+    id: `image_${createdAt}`,
+    type: 'image',
+    props: {
+      imageUrl:
+        'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop',
+      altText: 'Workspace desk with laptop',
+      caption: 'A professional image section for your website.',
+    },
+  };
+
+  const testimonialsBlock = {
+    id: `testimonials_${createdAt}`,
+    type: 'testimonials',
+    props: {
+      title: 'What People Say',
+      subtitle: 'Build trust by showing feedback from clients, customers, or users.',
+      testimonialOneName: 'Client One',
+      testimonialOneQuote:
+        'This website clearly presents the value and makes the business look professional.',
+      testimonialTwoName: 'Client Two',
+      testimonialTwoQuote: 'The layout is clean, useful, and easy for visitors to understand.',
+      testimonialThreeName: 'Client Three',
+      testimonialThreeQuote: 'A strong website section for building trust with future customers.',
+    },
+  };
+
+  const ctaBlock = {
+    id: `cta_${createdAt}`,
+    type: 'cta',
+    props: {
+      title: 'Ready to take action?',
+      subtitle: 'Add a short message and guide visitors to the next step.',
+      buttonText: 'Contact Now',
+      buttonLink: '#',
+    },
+  };
+
+  if (templateId === 'business') {
+    return JSON.stringify({
+      components: [heroBlock, servicesBlock, testimonialsBlock, ctaBlock],
+    });
+  }
+
+  if (templateId === 'portfolio') {
+    return JSON.stringify({
+      components: [heroBlock, imageBlock, textBlock, ctaBlock],
+    });
+  }
+
+  if (templateId === 'services') {
+    return JSON.stringify({
+      components: [heroBlock, servicesBlock, ctaBlock],
+    });
+  }
+
+  if (templateId === 'contact') {
+    return JSON.stringify({
+      components: [
+        heroBlock,
+        {
+          ...textBlock,
+          props: {
+            heading: `Contact ${pageName}`,
+            body: 'Add your contact details, business hours, location, email address, phone number, or inquiry instructions here.',
+          },
+        },
+        ctaBlock,
+      ],
+    });
+  }
+
   return JSON.stringify({
-    components: [
-      {
-        id: `hero_${Date.now()}`,
-        type: 'hero',
-        props: {
-          title: pageName,
-          subtitle: `This is the ${pageName} page built with VibeBuilder.`,
-          buttonText: 'Get Started',
-          buttonLink: '#',
-        },
-      },
-      {
-        id: `text_${Date.now()}`,
-        type: 'text',
-        props: {
-          heading: `About ${pageName}`,
-          body: 'Edit this content in the VibeBuilder editor and save it to SELISE Data Gateway.',
-        },
-      },
-    ],
+    components: [heroBlock, textBlock],
   });
+};
+
+const createDefaultLayoutJson = (pageName: string): string => {
+  return createTemplateLayoutJson(pageName, 'default');
 };
 
 export const VibeBuilderDashboardPage = () => {
@@ -74,6 +202,7 @@ export const VibeBuilderDashboardPage = () => {
   const [newWebsiteName, setNewWebsiteName] = useState('');
   const [newWebsiteDescription, setNewWebsiteDescription] = useState('');
   const [newPageName, setNewPageName] = useState('');
+  const [newPageTemplate, setNewPageTemplate] = useState<PageTemplateId>('default');
 
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingWebsite, setIsCreatingWebsite] = useState(false);
@@ -351,18 +480,27 @@ export const VibeBuilderDashboardPage = () => {
       setErrorMessage('');
       setSuccessMessage('');
 
+      const selectedTemplate = pageTemplateOptions.find((template) => template.id === newPageTemplate);
+
       await createWebsitePage({
         projectId: selectedProject.ItemId,
         ownerUserId: currentUserId,
         pageName,
         pageSlug,
-        layoutJson: createDefaultLayoutJson(pageName),
+        layoutJson: createTemplateLayoutJson(pageName, newPageTemplate),
         displayOrder: latestProjectPages.length + 1,
         isHomePage: false,
       });
 
       setNewPageName('');
-      setSuccessMessage(`${pageName} page created in ${selectedProject.siteName}.`);
+      setNewPageTemplate('default');
+      setSuccessMessage(
+        `${pageName} page created in ${selectedProject.siteName}${
+          selectedTemplate && selectedTemplate.id !== 'default'
+            ? ` using ${selectedTemplate.label} template`
+            : ''
+        }.`
+      );
 
       await waitForDataGatewaySync();
       await refreshPagesForProject(selectedProject.ItemId);
@@ -946,15 +1084,28 @@ export const VibeBuilderDashboardPage = () => {
             )}
 
             <form
-              className="mt-6 flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50/90 p-4 shadow-inner md:flex-row"
+              className="mt-6 grid gap-3 rounded-3xl border border-slate-200 bg-slate-50/90 p-4 shadow-inner md:grid-cols-[minmax(0,1fr)_260px_auto]"
               onSubmit={handleCreatePage}
             >
               <input
-                className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                 placeholder="New page name, e.g. Portfolio"
                 value={newPageName}
                 onChange={(event) => setNewPageName(event.target.value)}
               />
+
+              <select
+                aria-label="Choose page starter template"
+                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                value={newPageTemplate}
+                onChange={(event) => setNewPageTemplate(event.target.value as PageTemplateId)}
+              >
+                {pageTemplateOptions.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.label}
+                  </option>
+                ))}
+              </select>
 
               <button
                 className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
@@ -963,6 +1114,29 @@ export const VibeBuilderDashboardPage = () => {
               >
                 {isCreatingPage ? 'Creating...' : 'Create Page'}
               </button>
+
+              <p className="text-xs leading-5 text-slate-500 md:col-span-3">
+                Starter templates are optional. Choose Default for the normal simple page, or select
+                a richer starter layout to begin faster.
+              </p>
+
+              <div className="grid gap-2 md:col-span-3 md:grid-cols-2 lg:grid-cols-5">
+                {pageTemplateOptions.map((template) => (
+                  <button
+                    key={template.id}
+                    className={`rounded-2xl border px-3 py-3 text-left text-xs shadow-sm transition ${
+                      newPageTemplate === template.id
+                        ? 'border-blue-300 bg-blue-50 text-blue-700 shadow-blue-100'
+                        : 'border-slate-200 bg-white text-slate-600 hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100'
+                    }`}
+                    onClick={() => setNewPageTemplate(template.id)}
+                    type="button"
+                  >
+                    <span className="block font-bold">{template.label}</span>
+                    <span className="mt-1 block leading-5">{template.description}</span>
+                  </button>
+                ))}
+              </div>
             </form>
 
             <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
