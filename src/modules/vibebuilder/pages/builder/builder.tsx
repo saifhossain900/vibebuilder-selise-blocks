@@ -2,12 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import type { DragEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { LiveRenderer } from '../../components/live-renderer';
-import { getWebsitePagesByProject, updateWebsitePageLayout } from '../../services/vibebuilder.service';
+import {
+  getWebsitePagesByProject,
+  getWebsiteProjects,
+  updateWebsitePageLayout,
+} from '../../services/vibebuilder.service';
 import {
   LayoutComponent,
   LayoutComponentType,
   LayoutData,
   WebsitePage,
+  WebsiteProject,
 } from '../../types/vibebuilder.types';
 import { generateLayoutFromPrompt } from '../../utils/prompt-layout-generator';
 
@@ -117,6 +122,7 @@ const stringifyLayout = (components: LayoutComponent[]): string => {
 export const VibeBuilderEditorPage = () => {
   const { projectId, pageId } = useParams();
   const [pages, setPages] = useState<WebsitePage[]>([]);
+  const [activeProject, setActiveProject] = useState<WebsiteProject | null>(null);
   const [components, setComponents] = useState<LayoutComponent[]>([]);
   const [selectedComponentId, setSelectedComponentId] = useState('');
   const [draggedComponentId, setDraggedComponentId] = useState('');
@@ -140,11 +146,19 @@ export const VibeBuilderEditorPage = () => {
         setErrorMessage('');
         setSuccessMessage('');
 
-        const pageResult = await getWebsitePagesByProject(projectId);
+        const [pageResult, projectResult] = await Promise.all([
+          getWebsitePagesByProject(projectId),
+          getWebsiteProjects(),
+        ]);
+
         const loadedPages = pageResult.getWebsitePages.items ?? [];
+        const loadedProjects = projectResult.getWebsiteProjects.items ?? [];
         const selectedPage = loadedPages.find((page) => page.ItemId === pageId);
+        const selectedProject =
+          loadedProjects.find((project) => project.ItemId === projectId) ?? null;
 
         setPages(loadedPages);
+        setActiveProject(selectedProject);
         setComponents(selectedPage ? parseLayout(selectedPage.layoutJson).components : []);
         setSelectedComponentId('');
 
@@ -177,6 +191,9 @@ export const VibeBuilderEditorPage = () => {
   });
 
   const draftLayoutJson = useMemo(() => stringifyLayout(components), [components]);
+
+  const previewPagePath =
+    activeProject && activePage ? `/site/${activeProject.siteSlug}/${activePage.pageSlug}` : '';
 
   const addComponent = (type: LayoutComponentType) => {
     const newComponent = createComponent(type);
@@ -454,6 +471,15 @@ export const VibeBuilderEditorPage = () => {
               >
                 {isSaving ? 'Saving...' : 'Save layoutJson'}
               </button>
+
+              {previewPagePath && (
+                <Link
+                  className="rounded-2xl border border-blue-300/30 bg-blue-400/15 px-5 py-3 text-sm font-semibold text-blue-50 shadow-lg backdrop-blur transition hover:-translate-y-0.5 hover:bg-blue-400/25 hover:shadow-xl"
+                  to={previewPagePath}
+                >
+                  Preview Public Page
+                </Link>
+              )}
 
               <Link
                 className="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15 hover:shadow-xl"
