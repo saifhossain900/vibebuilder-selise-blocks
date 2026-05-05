@@ -332,584 +332,646 @@ export const VibeBuilderEditorPage = () => {
   };
 
   if (isLoading) {
-    return <div className="p-6">Loading builder workspace...</div>;
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe_0,#f8fafc_34%,#eef2ff_68%,#f8fafc_100%)] px-6 py-10">
+        <div className="mx-auto max-w-7xl rounded-[2rem] border border-white/80 bg-white/90 p-8 text-slate-700 shadow-xl shadow-slate-200/80 backdrop-blur">
+          Loading builder workspace...
+        </div>
+      </div>
+    );
   }
 
   if (!activePage) {
     return (
-      <div className="space-y-4 p-6">
-        <h1 className="text-2xl font-bold">Page not found</h1>
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#dbeafe_0,#f8fafc_34%,#eef2ff_68%,#f8fafc_100%)] px-6 py-10">
+        <div className="mx-auto max-w-3xl space-y-4 rounded-[2rem] border border-white/80 bg-white/95 p-8 shadow-xl shadow-slate-200/80 backdrop-blur">
+          <h1 className="text-2xl font-bold text-slate-950">Page not found</h1>
 
-        {errorMessage ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
-            {errorMessage}
-          </div>
-        ) : (
-          <p className="text-muted-foreground">
-            The selected page could not be found in SELISE Data Gateway.
-          </p>
-        )}
+          {errorMessage ? (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
+              {errorMessage}
+            </div>
+          ) : (
+            <p className="text-slate-500">
+              The selected page could not be found in SELISE Data Gateway.
+            </p>
+          )}
 
-        <Link className="text-blue-600 underline" to="/vibebuilder">
-          Back to VibeBuilder dashboard
-        </Link>
+          <Link
+            className="inline-flex rounded-2xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl"
+            to="/vibebuilder"
+          >
+            Back to VibeBuilder dashboard
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-blue-600">VibeBuilder Editor</p>
-          <h1 className="text-3xl font-bold tracking-tight">{activePage.pageName}</h1>
-          <p className="mt-2 text-muted-foreground">
-            Editing /{activePage.pageSlug}. Add, edit, reorder, prompt-generate, and save page
-            blocks as layoutJson.
-          </p>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm disabled:opacity-60"
-            disabled={isSaving}
-            onClick={saveLayout}
-            type="button"
-          >
-            {isSaving ? 'Saving...' : 'Save layoutJson'}
-          </button>
-
-          <Link
-            className="rounded-lg border bg-card px-4 py-2 text-sm font-medium shadow-sm"
-            to="/vibebuilder"
-          >
-            Back
-          </Link>
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,#dbeafe_0,#f8fafc_34%,#eef2ff_68%,#f8fafc_100%)]">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -left-24 top-0 h-80 w-80 rounded-full bg-blue-400/30 blur-3xl" />
+        <div className="absolute right-0 top-24 h-96 w-96 rounded-full bg-indigo-400/25 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-96 w-96 rounded-full bg-cyan-300/20 blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(15,23,42,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(15,23,42,0.04)_1px,transparent_1px)] bg-[size:42px_42px]" />
       </div>
 
-      {errorMessage && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
-          {errorMessage}
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="rounded-xl border border-green-200 bg-green-50 p-4 text-green-700">
-          {successMessage}
-        </div>
-      )}
-
-      <div className="grid gap-4 xl:grid-cols-[280px_1fr_340px]">
-        <aside className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm">
-          <div>
-            <h2 className="font-semibold">Pages</h2>
-            <div className="mt-3 space-y-2">
-              {sortedPages.map((page) => (
-                <Link
-                  key={page.ItemId}
-                  to={`/vibebuilder/builder/${page.projectId}/${page.ItemId}`}
-                  className={`block rounded-lg border px-3 py-2 text-sm ${
-                    page.ItemId === activePage.ItemId
-                      ? 'border-blue-300 bg-blue-50 text-blue-700'
-                      : 'bg-background'
-                  }`}
-                >
-                  <div className="font-medium">{page.pageName}</div>
-                  <div className="text-xs text-muted-foreground">/{page.pageSlug}</div>
-                </Link>
-              ))}
-            </div>
+      <div className="relative mx-auto max-w-[1500px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-slate-950 p-6 text-white shadow-2xl shadow-blue-950/20 md:p-8">
+          <div className="absolute inset-0 opacity-80">
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-500/30 blur-3xl" />
+            <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(59,130,246,0.20),transparent_45%,rgba(14,165,233,0.12))]" />
           </div>
 
-          <div className="border-t pt-4">
-            <h2 className="font-semibold">Component Library</h2>
-            <div className="mt-3 space-y-2">
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('hero')}
-                type="button"
-              >
-                + Hero Block
-              </button>
-
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('text')}
-                type="button"
-              >
-                + Text Block
-              </button>
-
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('cta')}
-                type="button"
-              >
-                + CTA Block
-              </button>
-
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('image')}
-                type="button"
-              >
-                + Image Block
-              </button>
-
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('services')}
-                type="button"
-              >
-                + Services Block
-              </button>
-
-              <button
-                className="w-full rounded-lg border bg-background px-3 py-2 text-left text-sm hover:bg-blue-50"
-                onClick={() => addComponent('testimonials')}
-                type="button"
-              >
-                + Testimonials Block
-              </button>
-            </div>
-          </div>
-
-          <div className="border-t pt-4">
-            <h2 className="font-semibold">Prompt Builder</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Describe the page you want. VibeBuilder will generate editable layoutJson.
-            </p>
-
-            <textarea
-              className="mt-3 min-h-28 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              placeholder="Example: Make me a portfolio homepage with hero, about section, and contact CTA"
-              value={promptText}
-              onChange={(event) => setPromptText(event.target.value)}
-            />
-
-            <button
-              className="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-60"
-              disabled={isGeneratingFromPrompt}
-              onClick={handleGenerateFromPrompt}
-              type="button"
-            >
-              {isGeneratingFromPrompt ? 'Generating...' : 'Generate Layout'}
-            </button>
-
-            <p className="mt-2 text-xs text-muted-foreground">
-              Generated blocks are editable. Click Save layoutJson to persist them in SELISE Data
-              Gateway.
-            </p>
-          </div>
-        </aside>
-
-        <main className="rounded-2xl border bg-background p-4 shadow-sm">
-          <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="relative flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div>
-              <h2 className="font-semibold">Builder Canvas</h2>
-              <p className="text-sm text-muted-foreground">
-                Click a block to edit it. Drag blocks to reorder them.
+              <p className="inline-flex rounded-full border border-blue-300/30 bg-blue-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-100 shadow-sm">
+                VibeBuilder Editor
+              </p>
+
+              <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+                {activePage.pageName}
+              </h1>
+
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
+                Editing /{activePage.pageSlug}. Add, edit, reorder, prompt-generate, and save page
+                blocks as layoutJson.
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2 text-xs text-slate-200">
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  {components.length} blocks
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  {sortedPages.length} pages
+                </span>
+                <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 shadow-sm backdrop-blur">
+                  Drag to reorder
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 md:justify-end">
+              <button
+                className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSaving}
+                onClick={saveLayout}
+                type="button"
+              >
+                {isSaving ? 'Saving...' : 'Save layoutJson'}
+              </button>
+
+              <Link
+                className="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white shadow-lg backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15 hover:shadow-xl"
+                to="/vibebuilder"
+              >
+                Back
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {errorMessage && (
+          <div className="rounded-3xl border border-red-200 bg-red-50/90 p-5 text-red-700 shadow-xl shadow-red-100 backdrop-blur">
+            {errorMessage}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="rounded-3xl border border-emerald-200 bg-emerald-50/90 p-5 text-emerald-700 shadow-xl shadow-emerald-100 backdrop-blur">
+            {successMessage}
+          </div>
+        )}
+
+        <div className="grid gap-5 xl:grid-cols-[300px_minmax(0,1fr)_370px]">
+          <aside className="space-y-4 rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur xl:sticky xl:top-6 xl:max-h-[calc(100vh-3rem)] xl:overflow-auto">
+            <div>
+              <h2 className="text-lg font-bold text-slate-950">Pages</h2>
+              <div className="mt-3 space-y-2">
+                {sortedPages.map((page) => (
+                  <Link
+                    key={page.ItemId}
+                    to={`/vibebuilder/builder/${page.projectId}/${page.ItemId}`}
+                    className={`block rounded-2xl border px-4 py-3 text-sm shadow-sm transition ${
+                      page.ItemId === activePage.ItemId
+                        ? 'border-blue-400 bg-blue-50 text-blue-700 shadow-blue-100'
+                        : 'border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100'
+                    }`}
+                  >
+                    <div className="font-semibold">{page.pageName}</div>
+                    <div className="mt-1 text-xs text-slate-500">/{page.pageSlug}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-slate-200 pt-4">
+              <h2 className="text-lg font-bold text-slate-950">Component Library</h2>
+              <div className="mt-3 grid gap-2">
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('hero')}
+                  type="button"
+                >
+                  + Hero Block
+                </button>
+
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('text')}
+                  type="button"
+                >
+                  + Text Block
+                </button>
+
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('cta')}
+                  type="button"
+                >
+                  + CTA Block
+                </button>
+
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('image')}
+                  type="button"
+                >
+                  + Image Block
+                </button>
+
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('services')}
+                  type="button"
+                >
+                  + Services Block
+                </button>
+
+                <button
+                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 hover:shadow-lg hover:shadow-blue-100"
+                  onClick={() => addComponent('testimonials')}
+                  type="button"
+                >
+                  + Testimonials Block
+                </button>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-200 pt-4">
+              <h2 className="text-lg font-bold text-slate-950">Prompt Builder</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                Describe the page you want. VibeBuilder will generate editable layoutJson.
+              </p>
+
+              <textarea
+                className="mt-3 min-h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm shadow-inner outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                placeholder="Example: Make me a portfolio homepage with hero, about section, and contact CTA"
+                value={promptText}
+                onChange={(event) => setPromptText(event.target.value)}
+              />
+
+              <button
+                className="mt-3 w-full rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isGeneratingFromPrompt}
+                onClick={handleGenerateFromPrompt}
+                type="button"
+              >
+                {isGeneratingFromPrompt ? 'Generating...' : 'Generate Layout'}
+              </button>
+
+              <p className="mt-2 text-xs leading-5 text-slate-500">
+                Generated blocks are editable. Click Save layoutJson to persist them in SELISE Data
+                Gateway.
               </p>
             </div>
+          </aside>
 
-            <span className="rounded-full border px-3 py-1 text-xs text-muted-foreground">
-              {components.length} blocks
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            {components.map((component, index) => (
-              <div
-                key={component.id}
-                draggable
-                onClick={() => setSelectedComponentId(component.id)}
-                onDragStart={() => setDraggedComponentId(component.id)}
-                onDragOver={allowDrop}
-                onDrop={() => handleDropOnComponent(component.id)}
-                className={`rounded-2xl border p-3 transition ${
-                  selectedComponentId === component.id
-                    ? 'border-blue-400 bg-blue-50'
-                    : 'bg-card hover:border-blue-200'
-                }`}
-              >
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-semibold uppercase text-muted-foreground">
-                      {component.type} block
-                    </p>
-                    <p className="text-sm text-muted-foreground">Position {index + 1}</p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      className="rounded border px-2 py-1 text-xs"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        moveComponent(component.id, 'up');
-                      }}
-                      type="button"
-                    >
-                      ↑
-                    </button>
-
-                    <button
-                      className="rounded border px-2 py-1 text-xs"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        moveComponent(component.id, 'down');
-                      }}
-                      type="button"
-                    >
-                      ↓
-                    </button>
-                  </div>
-                </div>
-
-                <LiveRenderer layoutJson={stringifyLayout([component])} />
-              </div>
-            ))}
-
-            {components.length === 0 && (
-              <div className="rounded-2xl border border-dashed bg-card p-8 text-center text-muted-foreground">
-                No blocks yet. Add a block from the Component Library or generate a layout from a
-                prompt.
-              </div>
-            )}
-          </div>
-        </main>
-
-        <aside className="space-y-4 rounded-2xl border bg-card p-4 shadow-sm">
-          <div>
-            <h2 className="font-semibold">Properties Panel</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Edit the selected block. Changes update the preview immediately.
-            </p>
-          </div>
-
-          {!selectedComponent && (
-            <div className="rounded-xl border border-dashed bg-background p-4 text-sm text-muted-foreground">
-              Select a block from the canvas to edit its content.
-            </div>
-          )}
-
-          {selectedComponent && (
-            <div className="space-y-4">
-              <div className="rounded-xl border bg-background p-4">
-                <p className="text-sm font-semibold">Selected: {selectedComponent.type}</p>
-                <p className="mt-1 break-all text-xs text-muted-foreground">
-                  {selectedComponent.id}
+          <main className="rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur">
+            <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-950">Builder Canvas</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                  Click a block to edit it. Drag blocks to reorder them.
                 </p>
               </div>
 
-              {(selectedComponent.type === 'hero' || selectedComponent.type === 'cta') && (
-                <>
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.title ?? ''}
-                      onChange={(event) => updateSelectedComponentProp('title', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Subtitle</span>
-                    <textarea
-                      className="min-h-24 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.subtitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('subtitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Button Text</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.buttonText ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('buttonText', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Button Link</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      placeholder="#, /site/agency-site/contact, mailto:hello@example.com"
-                      value={selectedComponent.props.buttonLink ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('buttonLink', event.target.value)
-                      }
-                    />
-                    <span className="block text-xs text-muted-foreground">
-                      Use #, a public page path, mailto:, tel:, or a full https:// link.
-                    </span>
-                  </label>
-                </>
-              )}
-
-              {selectedComponent.type === 'text' && (
-                <>
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Heading</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.heading ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('heading', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Body</span>
-                    <textarea
-                      className="min-h-32 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.body ?? ''}
-                      onChange={(event) => updateSelectedComponentProp('body', event.target.value)}
-                    />
-                  </label>
-                </>
-              )}
-
-              {selectedComponent.type === 'image' && (
-                <>
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Image URL</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.imageUrl ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('imageUrl', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Alt Text</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.altText ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('altText', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Caption</span>
-                    <textarea
-                      className="min-h-24 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.caption ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('caption', event.target.value)
-                      }
-                    />
-                  </label>
-                </>
-              )}
-
-              {selectedComponent.type === 'services' && (
-                <>
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Section Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.title ?? ''}
-                      onChange={(event) => updateSelectedComponentProp('title', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Section Subtitle</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.subtitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('subtitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 1 Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceOneTitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceOneTitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 1 Body</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceOneBody ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceOneBody', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 2 Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceTwoTitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceTwoTitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 2 Body</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceTwoBody ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceTwoBody', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 3 Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceThreeTitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceThreeTitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Service 3 Body</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.serviceThreeBody ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('serviceThreeBody', event.target.value)
-                      }
-                    />
-                  </label>
-                </>
-              )}
-
-              {selectedComponent.type === 'testimonials' && (
-                <>
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Section Title</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.title ?? ''}
-                      onChange={(event) => updateSelectedComponentProp('title', event.target.value)}
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Section Subtitle</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.subtitle ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('subtitle', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 1 Name</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialOneName ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialOneName', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 1 Quote</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialOneQuote ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialOneQuote', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 2 Name</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialTwoName ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialTwoName', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 2 Quote</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialTwoQuote ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialTwoQuote', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 3 Name</span>
-                    <input
-                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialThreeName ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialThreeName', event.target.value)
-                      }
-                    />
-                  </label>
-
-                  <label className="block space-y-2">
-                    <span className="text-sm font-medium">Testimonial 3 Quote</span>
-                    <textarea
-                      className="min-h-20 w-full rounded-lg border bg-background px-3 py-2 text-sm"
-                      value={selectedComponent.props.testimonialThreeQuote ?? ''}
-                      onChange={(event) =>
-                        updateSelectedComponentProp('testimonialThreeQuote', event.target.value)
-                      }
-                    />
-                  </label>
-                </>
-              )}
-
-              <button
-                className="w-full rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
-                onClick={deleteSelectedComponent}
-                type="button"
-              >
-                Delete Selected Block
-              </button>
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 shadow-sm">
+                {components.length} blocks
+              </span>
             </div>
-          )}
 
-          <div className="rounded-xl border bg-background p-4">
-            <h3 className="font-semibold">Stored layoutJson Preview</h3>
-            <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-slate-950 p-3 text-xs text-slate-100">
-              {JSON.stringify(JSON.parse(draftLayoutJson), null, 2)}
-            </pre>
-          </div>
-        </aside>
+            <div className="space-y-4">
+              {components.map((component, index) => (
+                <div
+                  key={component.id}
+                  draggable
+                  onClick={() => setSelectedComponentId(component.id)}
+                  onDragStart={() => setDraggedComponentId(component.id)}
+                  onDragOver={allowDrop}
+                  onDrop={() => handleDropOnComponent(component.id)}
+                  className={`rounded-[1.75rem] border p-4 shadow-sm transition ${
+                    selectedComponentId === component.id
+                      ? 'border-blue-400 bg-blue-50 shadow-xl shadow-blue-100'
+                      : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100'
+                  }`}
+                >
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {component.type} block
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">Position {index + 1}</p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          moveComponent(component.id, 'up');
+                        }}
+                        type="button"
+                      >
+                        ↑
+                      </button>
+
+                      <button
+                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-lg"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          moveComponent(component.id, 'down');
+                        }}
+                        type="button"
+                      >
+                        ↓
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                    <LiveRenderer layoutJson={stringifyLayout([component])} />
+                  </div>
+                </div>
+              ))}
+
+              {components.length === 0 && (
+                <div className="rounded-[1.75rem] border border-dashed border-slate-300 bg-white/80 p-10 text-center text-slate-500 shadow-sm backdrop-blur">
+                  No blocks yet. Add a block from the Component Library or generate a layout from a
+                  prompt.
+                </div>
+              )}
+            </div>
+          </main>
+
+          <aside className="space-y-4 rounded-[2rem] border border-white/80 bg-white/95 p-5 shadow-xl shadow-slate-200/80 backdrop-blur xl:sticky xl:top-6 xl:max-h-[calc(100vh-3rem)] xl:overflow-auto">
+            <div>
+              <h2 className="text-lg font-bold text-slate-950">Properties Panel</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+                Edit the selected block. Changes update the preview immediately.
+              </p>
+            </div>
+
+            {!selectedComponent && (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-6 text-slate-500">
+                Select a block from the canvas to edit its content.
+              </div>
+            )}
+
+            {selectedComponent && (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-blue-700">
+                    Selected: {selectedComponent.type}
+                  </p>
+                  <p className="mt-1 break-all text-xs text-blue-600">{selectedComponent.id}</p>
+                </div>
+
+                {(selectedComponent.type === 'hero' || selectedComponent.type === 'cta') && (
+                  <>
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.title ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('title', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Subtitle</span>
+                      <textarea
+                        className="min-h-24 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.subtitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('subtitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Button Text</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.buttonText ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('buttonText', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Button Link</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        placeholder="#, /site/agency-site/contact, mailto:hello@example.com"
+                        value={selectedComponent.props.buttonLink ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('buttonLink', event.target.value)
+                        }
+                      />
+                      <span className="block text-xs leading-5 text-slate-500">
+                        Use #, a public page path, mailto:, tel:, or a full https:// link.
+                      </span>
+                    </label>
+                  </>
+                )}
+
+                {selectedComponent.type === 'text' && (
+                  <>
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Heading</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.heading ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('heading', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Body</span>
+                      <textarea
+                        className="min-h-32 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.body ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('body', event.target.value)
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {selectedComponent.type === 'image' && (
+                  <>
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Image URL</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.imageUrl ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('imageUrl', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Alt Text</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.altText ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('altText', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Caption</span>
+                      <textarea
+                        className="min-h-24 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.caption ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('caption', event.target.value)
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {selectedComponent.type === 'services' && (
+                  <>
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Section Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.title ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('title', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Section Subtitle</span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.subtitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('subtitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 1 Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceOneTitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceOneTitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 1 Body</span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceOneBody ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceOneBody', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 2 Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceTwoTitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceTwoTitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 2 Body</span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceTwoBody ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceTwoBody', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 3 Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceThreeTitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceThreeTitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Service 3 Body</span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.serviceThreeBody ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('serviceThreeBody', event.target.value)
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                {selectedComponent.type === 'testimonials' && (
+                  <>
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Section Title</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.title ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('title', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Section Subtitle</span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.subtitle ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('subtitle', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Testimonial 1 Name</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialOneName ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialOneName', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Testimonial 1 Quote
+                      </span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialOneQuote ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialOneQuote', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Testimonial 2 Name</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialTwoName ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialTwoName', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Testimonial 2 Quote
+                      </span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialTwoQuote ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialTwoQuote', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">Testimonial 3 Name</span>
+                      <input
+                        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialThreeName ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialThreeName', event.target.value)
+                        }
+                      />
+                    </label>
+
+                    <label className="block space-y-2">
+                      <span className="text-sm font-semibold text-slate-700">
+                        Testimonial 3 Quote
+                      </span>
+                      <textarea
+                        className="min-h-20 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
+                        value={selectedComponent.props.testimonialThreeQuote ?? ''}
+                        onChange={(event) =>
+                          updateSelectedComponentProp('testimonialThreeQuote', event.target.value)
+                        }
+                      />
+                    </label>
+                  </>
+                )}
+
+                <button
+                  className="w-full rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-lg"
+                  onClick={deleteSelectedComponent}
+                  type="button"
+                >
+                  Delete Selected Block
+                </button>
+              </div>
+            )}
+
+            <div className="rounded-2xl border border-slate-200 bg-slate-950 p-4 shadow-sm">
+              <h3 className="font-semibold text-white">Stored layoutJson Preview</h3>
+              <pre className="mt-3 max-h-64 overflow-auto rounded-xl bg-slate-900 p-3 text-xs text-slate-100">
+                {JSON.stringify(JSON.parse(draftLayoutJson), null, 2)}
+              </pre>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );
