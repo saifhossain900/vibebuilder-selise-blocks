@@ -689,6 +689,26 @@ export const VibeBuilderDashboardPage = () => {
     }
   };
 
+  const copyPublicPageLink = async (page: WebsitePage) => {
+    if (!selectedProject) {
+      setErrorMessage('Select a website before copying a public page link.');
+      return;
+    }
+
+    const publicPageUrl = `${window.location.origin}/site/${selectedProject.siteSlug}/${page.pageSlug}`;
+
+    try {
+      await navigator.clipboard.writeText(publicPageUrl);
+      setErrorMessage('');
+      setSuccessMessage(`Copied public link for ${page.pageName}.`);
+    } catch (error) {
+      console.error('Failed to copy public page link:', error);
+      setErrorMessage(
+        'Could not copy the link automatically. Open View Page and copy the browser URL.'
+      );
+    }
+  };
+
   const handleDeletePage = async (page: WebsitePage) => {
     if (!selectedProject) {
       setErrorMessage('Select a website before deleting a page.');
@@ -1179,6 +1199,14 @@ export const VibeBuilderDashboardPage = () => {
                     >
                       View Page
                     </Link>
+
+                    <button
+                      className="inline-flex rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-emerald-100 hover:shadow-lg"
+                      onClick={() => copyPublicPageLink(page)}
+                      type="button"
+                    >
+                      Copy Link
+                    </button>
 
                     <button
                       className="inline-flex rounded-xl border border-blue-200 bg-white px-3 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg"
